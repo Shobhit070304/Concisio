@@ -12,8 +12,13 @@ const UserContext = ({ children }) => {
   const navigate = useNavigate();
 
   const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData.user));
     localStorage.setItem("token", userData.token);
+    setUser(userData);
+  };
+
+  const update = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData.user));
     setUser(userData);
   };
 
@@ -25,7 +30,7 @@ const UserContext = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, update }}>
       {children}
     </AuthContext.Provider>
   );

@@ -47,3 +47,25 @@ exports.login = async (req, res) => {
     res.status(500).json({ msg: "Server Error" });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const { name, password } = req.body.formData;
+
+    const user = await User.findOne({ _id: req.user });
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.name = name;
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: { id: user._id, name: user.name, email: user.email },
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "Server Error" });
+  }
+};

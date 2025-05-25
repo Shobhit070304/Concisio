@@ -1,9 +1,29 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Header from "../components/Header";
-import Sidebar from "../components/Sidebar"
+import Sidebar from "../components/Sidebar";
 
-const YoutubeSummarizer = () => {
+const suggestions = [
+  {
+    topic: "React Basics",
+    url: "https://www.youtube.com/watch?v=Ke90Tje7VS0",
+  },
+  {
+    topic: "Node.js Intro",
+    url: "https://www.youtube.com/watch?v=TlB_eWDSMt4",
+  },
+  {
+    topic: "Express Crash",
+    url: "https://www.youtube.com/watch?v=L72fhGm1tfE",
+  },
+  {
+    topic: "MongoDB Guide",
+    url: "https://www.youtube.com/watch?v=-56x56UppqQ",
+  },
+  { topic: "JWT Auth", url: "https://www.youtube.com/watch?v=7Q17ubqLfaM" },
+];
+
+const Home = () => {
   const [input, setInput] = useState("");
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,14 +32,6 @@ const YoutubeSummarizer = () => {
   const [mode, setMode] = useState("youtube");
   const [file, setFile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
-
-  const suggestions = [
-    { topic: "React Basics", url: "https://youtu.be/Ke90Tje7VS0" },
-    { topic: "Node.js Intro", url: "https://youtu.be/TlB_eWDSMt4" },
-    { topic: "Express Crash", url: "https://youtu.be/L72fhGm1tfE" },
-    { topic: "MongoDB Guide", url: "https://youtu.be/-56x56UppqQ" },
-    { topic: "JWT Auth", url: "https://youtu.be/7Q17ubqLfaM" },
-  ];
 
   const handleSuggestionClick = (url) => {
     setInput(url);
@@ -181,78 +193,91 @@ const YoutubeSummarizer = () => {
   };
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-br from-black to-gray-900 text-white font-sans flex flex-col">
+    <div className="min-h-screen relative text-white font-sans flex flex-col">
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-gray-900 via-black to-gray-800 backdrop-blur-sm" />
+
       {/* Header */}
       <Header />
-      <Sidebar/>
+      {/* Sidebar  */}
+      <Sidebar />
       {/* Main */}
       <main className="flex flex-col items-center px-4 py-12">
         {/* Hero Section */}
-        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-white via-gray-300 to-white bg-clip-text text-transparent drop-shadow-lg text-center">
-          Summarize YouTube Videos & Files Effortlessly
-        </h1>
-        <p className="mt-2 text-sm text-white/60">
-          AI-powered smart note generation for learners & creators.
-        </p>
+        <div className="text-center mt-8 max-w-2xl">
+          <h1 className="text-4xl sm:text-4xl md:text-4xl font-semibold mb-6">
+            Summarize YouTube Videos & Files Effortlessly
+          </h1>
+          <p className="text-gray-400 text-lg sm:text-xl mb-10">
+            AI-powered smart note generation for{" "}
+            <span className="text-white">learners</span> and{" "}
+            <span className="text-white">creators</span>.
+          </p>
+        </div>
 
         {/* Input Box with File + Button */}
         {mode === "youtube" && (
-          <div className="mt-10 w-full max-w-3xl flex items-center gap-2 bg-white/5 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg border border-white/10">
+          <div className="bg-[#111] rounded-xl p-2 border border-gray-700 w-full max-w-2xl mx-auto text-left overflow-hidden">
             <input
+              className="w-full h-20 bg-transparent text-white p-2 resize-none outline-none placeholder-gray-500"
               type="text"
               placeholder="Paste YouTube video link..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="flex-1 bg-transparent text-white text-lg outline-none placeholder-white/40"
             />
-            <button
-              onClick={handleSummarizeVideo}
-              disabled={loading}
-              className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-            >
-              Summarize
-            </button>
+            <div className="flex items-center px-4 pb-4">
+              <button
+                onClick={handleSummarizeVideo}
+                disabled={loading}
+                className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition"
+              >
+                {loading ? "Processing..." : "Upload & Summarize ⚡"}
+              </button>
+            </div>
           </div>
         )}
 
         {/* Input Box with File + Button */}
         {mode === "notes" && (
-          <div className="mt-10 w-full max-w-3xl flex items-center gap-2 bg-white/5 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg border border-white/10">
+          <div className="bg-[#111] rounded-xl border p-2 border-gray-700 w-full max-w-2xl mx-auto text-left overflow-hidden">
             <textarea
-              type="text"
-              placeholder="Paste your long notes here"
               name="notes"
               rows="3"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="flex-1 bg-transparent text-white text-lg outline-none placeholder-white/40"
+              className="w-full h-28 bg-transparent text-white p-2 resize-none outline-none placeholder-gray-500"
+              placeholder="Paste Your notes here..."
             />
-            <button
-              onClick={handleSummarizeNotes}
-              disabled={loading}
-              className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-            >
-              Summarize
-            </button>
+            <div className="flex items-center px-4 pb-4">
+              <button
+                onClick={handleSummarizeNotes}
+                disabled={loading}
+                className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition"
+              >
+                {loading ? "Processing..." : "Upload & Summarize ⚡"}
+              </button>
+            </div>
           </div>
         )}
 
         {mode === "file" && (
-          <div className="mt-10 w-full max-w-3xl flex items-center justify-between gap-2 bg-white/5 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg border border-white/10">
+          <div className="bg-[#111] rounded-xl p-2 border border-gray-700 w-full max-w-2xl mx-auto text-left overflow-hidden">
             <input
+              className="w-full h-20 bg-transparent text-white p-2 resize-none outline-none placeholder-gray-500"
               type="file"
               name="file"
               accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
               onChange={handleFileChange}
+              placeholder="Paste upload a file"
             />
-
-            <button
-              onClick={handleSummarizeFile}
-              disabled={loading}
-              className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-            >
-              {loading ? "Processing..." : "Upload & Summarize"}
-            </button>
+            <div className="flex items-center px-4 pb-4">
+              <button
+                onClick={handleSummarizeFile}
+                disabled={loading}
+                className="bg-white text-black text-sm font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition"
+              >
+                {loading ? "Processing..." : "Upload & Summarize ⚡"}
+              </button>
+            </div>
           </div>
         )}
 
@@ -296,15 +321,14 @@ const YoutubeSummarizer = () => {
         )}
 
         {/* Suggestions */}
-        <div className="mt-8 flex flex-wrap justify-center gap-4 w-full max-w-4xl">
+        <div className="mt-8 flex flex-wrap justify-center gap-2 w-full max-w-4xl">
           {suggestions.map((item, index) => (
             <div
               key={index}
               onClick={() => handleSuggestionClick(item.url)}
-              className="cursor-pointer bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 hover:scale-105 transition-all duration-200 shadow-md max-w-xs"
+              className="cursor-pointer bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-3 py-2 hover:scale-105 transition-all duration-200 shadow-md max-w-xs"
             >
-              <p className="text-sm font-semibold text-white">{item.topic}</p>
-              <p className="text-xs text-white/40 truncate">{item.url}</p>
+              <p className="text-sm text-white">{item.topic}</p>
             </div>
           ))}
         </div>
@@ -328,7 +352,7 @@ const YoutubeSummarizer = () => {
 
         <button
           onClick={saveNote}
-          className="bg-blue-600 text-white px-4 py-2 mt-6 rounded"
+          className="bg-blue-600 text-white px-4 py-2 mt-6 rounded-lg"
         >
           Save to Dashboard
         </button>
@@ -342,4 +366,4 @@ const YoutubeSummarizer = () => {
   );
 };
 
-export default YoutubeSummarizer;
+export default Home;

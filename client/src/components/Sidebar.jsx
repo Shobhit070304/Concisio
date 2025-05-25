@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +9,8 @@ export default function Sidebar() {
 
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   const fetchNotes = async () => {
     const token = localStorage.getItem("token");
@@ -49,7 +52,9 @@ export default function Sidebar() {
     fetchNotes();
   }, []);
 
-  console.log(notes);
+  const handleOpenChat = async (id) => {
+    navigate(`/chat/${id}`);
+  };
 
   return (
     <>
@@ -57,7 +62,7 @@ export default function Sidebar() {
       <button
         ref={toggleButtonRef}
         onClick={toggleSidebar}
-        className="fixed top-4 left-2 z-50 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none"
+        className="fixed bottom-4 left-2 z-50 p-2  text-white rounded hover:text-gray-500 focus:outline-none"
       >
         {isOpen ? "✖" : "☰"}
       </button>
@@ -70,16 +75,22 @@ export default function Sidebar() {
         }`}
       >
         <div className="p-4 border-b">
-          <h2 className="text-lg text-center text-black font-bold">Recent</h2>
+          <h2 className="text-lg text-center text-white font-bold">History</h2>
         </div>
-        <div className="p-4">
+        <div className="p-4 text-gray-400">
           {loading ? (
             "Loading..."
           ) : (
             <ul className="space-y-3 flex flex-col">
               {notes &&
                 notes.map((note, idx) => (
-                  <li key={idx} className="border-b border-gray-600 py-2 px-2">
+                  <li
+                    onClick={() => {
+                      handleOpenChat(note._id);
+                    }}
+                    key={idx}
+                    className="border-b border-gray-600 py-2 px-2"
+                  >
                     <a
                       href="#"
                       className="text-gray-200 text-sm tracking-tighter hover:text-blue-500"

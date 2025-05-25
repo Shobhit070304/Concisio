@@ -4,6 +4,7 @@ const protect = require("../middlewares/user-middleware");
 const {
   createNote,
   getNotes,
+  getNote,
   deleteNote,
   downloadNote,
 } = require("../controllers/notes-controller");
@@ -13,6 +14,9 @@ router.post("/save", protect, createNote);
 
 // Get all notes of the user
 router.get("/all", protect, getNotes);
+ 
+// Get note of the user
+router.get("/:id",protect, getNote);
 
 // Delete a note
 router.delete("/delete/:id", protect, deleteNote);

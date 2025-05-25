@@ -11,16 +11,9 @@ const ProfilePage = () => {
   const randomSeed = user.name + Math.floor(Math.random() * 10000);
   const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${randomSeed}`;
 
-  const handleLogout = () => {
-    console.log("User logged out");
-  };
-
-  const handleUpdateProfile = () => {
-    console.log("Update profile clicked");
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+    // <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-xl" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6 fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-xl">
       <Link
         to="/home"
         className="px-4 py-2 flex gap-2 absolute top-4 left-4 rounded-md text-white bg-black hover:bg-gray-800"
@@ -29,14 +22,14 @@ const ProfilePage = () => {
         Back
       </Link>
 
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
+      <div className="bg-gray-800 text-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
         <img
           src={avatar}
           alt="User Avatar"
           className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500"
         />
-        <h2 className="text-xl font-bold text-gray-800">{user.user.name}</h2>
-        <p className="text-gray-600 mb-6">{user.user.email}</p>
+        <h2 className="text-xl font-bold">{user?.user?.name}</h2>
+        <p className=" mb-6">{user?.user?.email}</p>
 
         <div className="space-y-3">
           <Link
@@ -45,12 +38,12 @@ const ProfilePage = () => {
           >
             Dashboard
           </Link>
-          <button
-            onClick={handleUpdateProfile}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+          <Link
+            to="/update-profile"
+            className="w-full flex justify-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >
             Update Profile
-          </button>
+          </Link>
           <button
             onClick={logout}
             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Background from "../components/Background";
+import Background from "../Backgrounds/Background";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "../context/UserContext";
 import axios from "axios";

@@ -21,6 +21,17 @@ exports.getNotes = async (req, res) => {
   }
 };
 
+exports.getNote = async (req, res) => {
+  
+  try {
+    const { id } = req.params;
+    const note = await Note.findOne({ user: req.user, _id: id });
+    res.status(200).json(note);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch notes" });
+  }
+};
+
 exports.deleteNote = async (req, res) => {
   try {
     await Note.findOneAndDelete({ _id: req.params.id, user: req.user });

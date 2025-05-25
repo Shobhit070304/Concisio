@@ -94,8 +94,6 @@ exports.summarizePdf = async (req, res) => {
       return res.status(400).json({ error: "Unsupported file format" });
     }
 
-    console.log("Content : ", extractedText);
-
     const summary = await summarizeTextWithGemini(extractedText, "pdf");
     res.status(200).json({ summary });
   } catch (err) {
