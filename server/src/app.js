@@ -12,10 +12,15 @@ connectDB();
 const app = express();
 
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  console.log("Welcome to NoteTube Backend!");
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/summarize", summarizeRoutes);
-app.use("/api/note", noteRoutes)
+app.use("/api/note", noteRoutes);
 
 module.exports = app;
