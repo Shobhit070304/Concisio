@@ -82,7 +82,7 @@ export default function Sidebar() {
             "Loading..."
           ) : (
             <ul className="space-y-3 flex flex-col">
-              {notes &&
+              {notes.length > 0 ? (
                 notes.map((note, idx) => (
                   <li
                     onClick={() => {
@@ -98,7 +98,9 @@ export default function Sidebar() {
                       {note.title.split(",")[0]}
                     </a>
                   </li>
-                ))}
+                ))): (
+                  <h1>Nothing to show</h1>
+                )}
             </ul>
           )}
         </div>
