@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  console.log("Welcome to NoteTube Backend!");
+  res.send("Welcome to NoteTube Backend!");
 });
 
 app.use("/api/auth", authRoutes);
