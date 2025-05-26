@@ -59,7 +59,6 @@ exports.summarizeNotes = async (req, res) => {
       return res.status(400).json({ error: "Notes text is required" });
     }
     const summary = await summarizeTextWithGemini(rawNotes, "notes");
-
     res.status(200).json({ summary });
   } catch (err) {
     console.error(err);
@@ -73,15 +72,12 @@ exports.summarizePdf = async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    console.log(req.file)
+    console.log(req.file);
 
     const mime = req.file.mimetype;
     let extractedText = "";
 
-    if (
-      mime ===
-      "application/pdf"
-    ) {
+    if (mime === "application/pdf") {
       extractedText = await extractTextFromDocx(req.file.buffer);
     } else if (
       mime ===

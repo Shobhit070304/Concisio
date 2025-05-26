@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+import { MDXEditor } from "@mdxeditor/editor";
+import { headingsPlugin } from "@mdxeditor/editor";
 
 const suggestions = [
   {
@@ -192,6 +197,19 @@ const Home = () => {
     }
   };
 
+  const handleCopy = () => {
+    if (summary) {
+      navigator.clipboard
+        .writeText(summary)
+        .then(() => {
+          alert("Summary copied to clipboard!");
+        })
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+        });
+    }
+  };
+
   return (
     <div className="min-h-screen relative text-white font-sans flex flex-col">
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-gray-900 via-black to-gray-800 backdrop-blur-sm" />
@@ -335,18 +353,31 @@ const Home = () => {
 
         {/* Summary Output */}
         {summary && (
-          <div className="mt-10 w-full max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-white shadow-lg">
+          <div className="mt-10 w-full max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
             <h2 className="text-2xl font-bold mb-2 text-white/90">
               📝 Summary
             </h2>
-            <p className="text-white/70 leading-relaxed">{summary}</p>
-            <button
+            <div className="prose overflow-auto whitespace-normal max-w-3xl mx-auto rounded-2xl shadow-lg">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {summary}
+              </ReactMarkdown>
+            </div>
+
+            <div className="ml-6">
+              <button
               onClick={mode !== "pdf" ? handleDownload : handleDownloadFile}
               className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
               disabled={downloading}
             >
               {downloading ? "Downloading..." : "Download PDF"}
             </button>
+            <button
+              onClick={handleCopy}
+              className="mt-4 ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Copy Summary
+            </button>
+            </div>
           </div>
         )}
 
