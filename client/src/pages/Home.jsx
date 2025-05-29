@@ -378,7 +378,7 @@ const Home = () => {
             <h2 className="text-2xl font-bold mb-2 text-white/90">
               📝 Summary
             </h2>
-            <div ref={markdownRef} className="prose prose-slate prose:sm max-w-none dark:prose-invert">
+            <div className="prose prose-slate prose:sm max-w-none dark:prose-invert">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {summary}
               </ReactMarkdown>
