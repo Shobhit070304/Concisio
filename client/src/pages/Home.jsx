@@ -5,7 +5,6 @@ import Sidebar from "../components/Sidebar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-
 const suggestions = [
   {
     topic: "React Basics",
@@ -56,10 +55,10 @@ const Home = () => {
           videoUrl: input.trim(),
         }
       );
-      console.log("response data -> ", res.data);
       //Remove ```markdown\n from the summary
-      const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
-      console.log("output -> ", output);
+      const output = res.data.summary
+        .replace("```markdown\n", "")
+        .replace("\n```", "");
 
       if (res.status === 200) {
         setSummary(output);
@@ -89,7 +88,9 @@ const Home = () => {
         }
       );
       if (res.status === 200) {
-        const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
+        const output = res.data.summary
+          .replace("```markdown\n", "")
+          .replace("\n```", "");
         setSummary(output);
       } else {
         alert("Failed to summarize notes. Please try again.");
@@ -151,7 +152,9 @@ const Home = () => {
         }
       );
 
-      const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
+      const output = res.data.summary
+        .replace("```markdown\n", "")
+        .replace("\n```", "");
       setSummary(output);
     } catch (err) {
       alert("Failed to upload and summarize document");
@@ -219,7 +222,7 @@ const Home = () => {
         .replace(/###\s?/g, "")
         .replace(/##\s?/g, "")
         .replace(/#\s?/g, "")
-        .replace(/\*\*/g, "")
+        .replace(/\*\*/g, "");
 
       navigator.clipboard.writeText(plainText);
     }
@@ -317,28 +320,31 @@ const Home = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             onClick={() => setMode("youtube")}
-            className={`px-4 py-2 rounded-lg ${mode === "youtube"
-              ? "bg-white text-black"
-              : "bg-white/10 text-white hover:bg-white/20"
-              } transition`}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "youtube"
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            } transition`}
           >
             YouTube
           </button>
           <button
             onClick={() => setMode("notes")}
-            className={`px-4 py-2 rounded-lg ${mode === "notes"
-              ? "bg-white text-black"
-              : "bg-white/10 text-white hover:bg-white/20"
-              } transition`}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "notes"
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            } transition`}
           >
             Notes
           </button>
           <button
             onClick={() => setMode("file")}
-            className={`px-4 py-2 rounded-lg ${mode === "file"
-              ? "bg-white text-black"
-              : "bg-white/10 text-white hover:bg-white/20"
-              } transition`}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "file"
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            } transition`}
           >
             File
           </button>
@@ -402,9 +408,16 @@ const Home = () => {
         {/* Save to Dashboard */}
         {summary && (
           <>
-            <h1 className="text-3xl text-gray-600  font-bold mb-2 mt-20 text-white/90 ">Want to Save it ?</h1>
-            <form onSubmit={handleSaveToDashboard} className="mt-4 w-1/3 max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
-              <label htmlFor="title" className="text-white">Title</label>
+            <h1 className="text-3xl text-gray-600  font-bold mb-2 mt-20 text-white/90 ">
+              Want to Save it ?
+            </h1>
+            <form
+              onSubmit={handleSaveToDashboard}
+              className="mt-4 w-1/3 max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg"
+            >
+              <label htmlFor="title" className="text-white">
+                Title
+              </label>
               <input
                 type="text"
                 name="title"
