@@ -56,8 +56,10 @@ const Home = () => {
           videoUrl: input.trim(),
         }
       );
+      console.log("response data -> ", res.data);
       //Remove ```markdown\n from the summary
       const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
+      console.log("output -> ", output);
 
       if (res.status === 200) {
         setSummary(output);
