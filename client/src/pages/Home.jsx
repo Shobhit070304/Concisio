@@ -58,7 +58,6 @@ const Home = () => {
       );
       //Remove ```markdown\n from the summary
       const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
-      console.log(output);
 
       if (res.status === 200) {
         setSummary(output);
@@ -88,9 +87,7 @@ const Home = () => {
         }
       );
       if (res.status === 200) {
-        //Remove ```markdown\n from the summary
         const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
-        console.log(output);
         setSummary(output);
       } else {
         alert("Failed to summarize notes. Please try again.");
@@ -138,7 +135,6 @@ const Home = () => {
       alert("Please select a document file");
       return;
     }
-    console.log(file);
 
     const formData = new FormData();
     formData.append("document", file);
@@ -154,7 +150,6 @@ const Home = () => {
       );
 
       const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
-      console.log(output);
       setSummary(output);
     } catch (err) {
       alert("Failed to upload and summarize document");
