@@ -72,8 +72,6 @@ exports.summarizePdf = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
-    console.log(req.file);
-
     const mime = req.file.mimetype;
     let extractedText = "";
 

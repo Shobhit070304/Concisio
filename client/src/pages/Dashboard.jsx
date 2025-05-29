@@ -63,12 +63,15 @@ export default function Dashboard() {
           },
         }
       );
-      console.log(res.data);
-      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${title || "note"}.pdf`;
+      link.download = `${title || "document"}.pdf`;
       link.click();
+
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       alert("Failed to download note");
     }

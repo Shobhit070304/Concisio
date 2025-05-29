@@ -1,5 +1,6 @@
 const Note = require("../models/noteModel");
 const PDFDocument = require("pdfkit");
+const generatePdfBuffer = require("../utils/generatePdf");
 
 exports.createNote = async (req, res) => {
   const { title, content } = req.body;
@@ -22,7 +23,7 @@ exports.getNotes = async (req, res) => {
 };
 
 exports.getNote = async (req, res) => {
-  
+
   try {
     const { id } = req.params;
     const note = await Note.findOne({ user: req.user, _id: id });
@@ -42,23 +43,18 @@ exports.deleteNote = async (req, res) => {
 };
 
 exports.downloadNote = async (req, res) => {
+  const note = await Note.findOne({ _id: req.params.id, user: req.user });
+  if (!note) return res.status(404).json({ error: "Note not found" });
   try {
-    const note = await Note.findOne({ _id: req.params.id, user: req.user });
-    if (!note) return res.status(404).json({ error: "Note not found" });
-
-    const doc = new PDFDocument();
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${note.title || "note"}.pdf"`
-    );
-
-    doc.pipe(res);
-    doc.fontSize(18).text(note.title || "Note", { underline: true });
-    doc.moveDown();
-    doc.fontSize(12).text(note.content);
-    doc.end();
-  } catch (err) {
-    res.status(500).json({ error: "Failed to download PDF" });
+    const pdfBuffer = await generatePdfBuffer(note.content);
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${note.title || "note"}.pdf"`,
+      "Content-Length": pdfBuffer.length,
+    });
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to generate PDF" });
   }
 };

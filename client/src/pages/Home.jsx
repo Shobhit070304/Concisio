@@ -346,6 +346,12 @@ const Home = () => {
             File
           </button>
         </div>
+
+        {/* Display a line showing the type of files supported  */}
+        <div className="mt-4 text-gray-500 text-sm">
+          Supported file types: PDF, DOC, DOCX, PPT, PPTX, TXT
+        </div>
+
         {/* Loading Spinner */}
         {loading && (
           <div className="mt-6 flex items-center justify-center">
@@ -397,28 +403,29 @@ const Home = () => {
         )}
 
         {/* Save to Dashboard */}
-        {/* {summary && ( */}
-       
-          <h1 className="text-3xl text-gray-600  font-bold mb-2 mt-20 text-white/90 ">Want to Save it ?</h1>
-          <form onSubmit={handleSaveToDashboard} className="mt-4 w-1/3 max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
-            <label htmlFor="title" className="text-white">Title</label>
-            <input
-              type="text"
-              name="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              placeholder="Title"
-              className="w-full bg-transparent border px-4 py-3 rounded-xl border-gray-700 text-white p-2 resize-none outline-none placeholder-gray-500"
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 mt-6 rounded-lg"
-            >
-              {saving ? "Saving..." : "Save to Dashboard"}
-            </button>
-          </form>
-        {/* )} */}
+        {summary && (
+          <>
+            <h1 className="text-3xl text-gray-600  font-bold mb-2 mt-20 text-white/90 ">Want to Save it ?</h1>
+            <form onSubmit={handleSaveToDashboard} className="mt-4 w-1/3 max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
+              <label htmlFor="title" className="text-white">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                placeholder="Title"
+                className="w-full bg-transparent border px-4 py-3 rounded-xl border-gray-700 text-white p-2 resize-none outline-none placeholder-gray-500"
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 mt-6 rounded-lg"
+              >
+                {saving ? "Saving..." : "Save to Dashboard"}
+              </button>
+            </form>
+          </>
+        )}
       </main>
 
       {/* Footer */}
