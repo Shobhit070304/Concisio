@@ -3,12 +3,13 @@ const fs = require("fs").promises;
 const fsSync = require("fs");
 const path = require("path");
 const pdfParse = require("pdf-parse");
-const PPTX2Json = require("pptx2json");
+const PPTX2Json = require('pptx2json');
+const pptx2json = new PPTX2Json();
 
-async function extractTextFromDocx(buffer) {
+// Extract text from PDF file
+async function extractTextFromPdf(buffer) {
   try {
     const data = await pdfParse(buffer);
-    console.log(data.text);
     return data.text; // Extracted text from PDF
   } catch (err) {
     console.error(err);
@@ -16,6 +17,17 @@ async function extractTextFromDocx(buffer) {
   }
 }
 
+// Extract text from TXT file
+function extractTextFromTxt(buffer) {
+  try {
+    return buffer.toString("utf-8");
+  } catch (err) {
+    console.error("Failed to convert buffer to text:", err);
+    return "";
+  }
+}
+
+// Extract text from PPTX file
 async function extractTextFromPptx(buffer) {
   try {
     const tmpDir = path.join(__dirname, "../tmp");
@@ -26,11 +38,13 @@ async function extractTextFromPptx(buffer) {
     const tmpPath = path.join(tmpDir, `upload-${Date.now()}.pptx`);
     await fs.writeFile(tmpPath, buffer);
 
-    const pptx2json = new PPTX2Json();
-    const result = await pptx2json.parse(tmpPath);
+    // Parse the .pptx file using pptx2json
+    const result = await pptx2json.toJson(tmpPath);
 
-    await fs.unlink(tmpPath); // delete temp file after parsing
+    // Delete the temp file after parsing
+    await fs.unlink(tmpPath);
 
+    // Extract text
     let text = "";
     if (result.slides && Array.isArray(result.slides)) {
       result.slides.forEach((slide) => {
@@ -42,50 +56,22 @@ async function extractTextFromPptx(buffer) {
       });
     }
 
-    return text;
+    return text.trim();
   } catch (err) {
-    console.error(err);
+    console.error("Error extracting PPTX text:", err);
     throw new Error("Failed to parse PPTX");
   }
 }
 
-function extractTextFromTxt(buffer) {
-  return buffer.toString("utf-8");
+// Extract text from DOCX file
+async function extractTextFromDocx(buffer) {
+  const { value } = await mammoth.extractRawText({ buffer });
+  return value.trim();
 }
 
-// async function extractTextFromPptx(buffer) {
-//   try {
-//     const tmpDir = path.join(__dirname, "../tmp");
-//     if (!fsSync.existsSync(tmpDir)) {
-//       fsSync.mkdirSync(tmpDir, { recursive: true });
-//     }
-
-//     const tmpPath = path.join(tmpDir, `upload-${Date.now()}.pptx`);
-//     await fs.writeFile(tmpPath, buffer);
-
-//     const result = await pptx2json.parse(tmpPath);
-//     await fs.unlink(tmpPath); // cleanup
-
-//     let text = "";
-//     result.slides.forEach((slide) => {
-//       slide.texts.forEach((textItem) => {
-//         text += textItem.text + "\n";
-//       });
-//     });
-
-//     return text;
-//   } catch (err) {
-//     console.error(err);
-//     throw new Error("Failed to parse PPTX");
-//   }
-// }
-
-// async function extractTextFromTxt(buffer) {
-//   return buffer.toString("utf-8");
-// }
-
 module.exports = {
-  extractTextFromDocx,
+  extractTextFromPdf,
   extractTextFromPptx,
   extractTextFromTxt,
+  extractTextFromDocx,
 };

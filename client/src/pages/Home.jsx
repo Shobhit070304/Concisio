@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { MDXEditor } from "@mdxeditor/editor";
-import { headingsPlugin } from "@mdxeditor/editor";
 
 const suggestions = [
   {
@@ -37,6 +35,8 @@ const Home = () => {
   const [mode, setMode] = useState("youtube");
   const [file, setFile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [title, setTitle] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const handleSuggestionClick = (url) => {
     setInput(url);
@@ -56,9 +56,12 @@ const Home = () => {
           videoUrl: input.trim(),
         }
       );
+      //Remove ```markdown\n from the summary
+      const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
+      console.log(output);
 
       if (res.status === 200) {
-        setSummary(res.data.summary);
+        setSummary(output);
       } else {
         alert("Failed to summarize video. Please try again.");
       }
@@ -85,7 +88,10 @@ const Home = () => {
         }
       );
       if (res.status === 200) {
-        setSummary(res.data.summary);
+        //Remove ```markdown\n from the summary
+        const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
+        console.log(output);
+        setSummary(output);
       } else {
         alert("Failed to summarize notes. Please try again.");
       }
@@ -132,6 +138,7 @@ const Home = () => {
       alert("Please select a document file");
       return;
     }
+    console.log(file);
 
     const formData = new FormData();
     formData.append("document", file);
@@ -145,7 +152,10 @@ const Home = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      setSummary(res.data.summary);
+
+      const output = res.data.summary.replace("```markdown\n", "").replace("\n```", "");
+      console.log(output);
+      setSummary(output);
     } catch (err) {
       alert("Failed to upload and summarize document");
     }
@@ -176,14 +186,21 @@ const Home = () => {
     setDownloading(false);
   };
 
-  const saveNote = async () => {
+  const handleSaveToDashboard = async (e) => {
+    e.preventDefault();
+    setSaving(true);
     const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login to save your note");
+      return;
+    }
+    let date = new Date().toLocaleString();
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/note/save`,
         {
-          title: "Auto Summary - " + new Date().toLocaleString(),
-          content: summary,
+          title: title.trim() + " " + date || "Auto Summary - " + date,
+          content: summary.trim(),
         },
         {
           headers: {
@@ -194,19 +211,20 @@ const Home = () => {
       alert("Note saved successfully");
     } catch (err) {
       alert("Failed to save note");
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleCopy = () => {
     if (summary) {
-      navigator.clipboard
-        .writeText(summary)
-        .then(() => {
-          alert("Summary copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy:", err);
-        });
+      const plainText = summary
+        .replace(/###\s?/g, "")
+        .replace(/##\s?/g, "")
+        .replace(/#\s?/g, "")
+        .replace(/\*\*/g, "")
+
+      navigator.clipboard.writeText(plainText);
     }
   };
 
@@ -302,31 +320,28 @@ const Home = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             onClick={() => setMode("youtube")}
-            className={`px-4 py-2 rounded-lg ${
-              mode === "youtube"
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            } transition`}
+            className={`px-4 py-2 rounded-lg ${mode === "youtube"
+              ? "bg-white text-black"
+              : "bg-white/10 text-white hover:bg-white/20"
+              } transition`}
           >
             YouTube
           </button>
           <button
             onClick={() => setMode("notes")}
-            className={`px-4 py-2 rounded-lg ${
-              mode === "notes"
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            } transition`}
+            className={`px-4 py-2 rounded-lg ${mode === "notes"
+              ? "bg-white text-black"
+              : "bg-white/10 text-white hover:bg-white/20"
+              } transition`}
           >
             Notes
           </button>
           <button
             onClick={() => setMode("file")}
-            className={`px-4 py-2 rounded-lg ${
-              mode === "file"
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            } transition`}
+            className={`px-4 py-2 rounded-lg ${mode === "file"
+              ? "bg-white text-black"
+              : "bg-white/10 text-white hover:bg-white/20"
+              } transition`}
           >
             File
           </button>
@@ -357,7 +372,7 @@ const Home = () => {
             <h2 className="text-2xl font-bold mb-2 text-white/90">
               📝 Summary
             </h2>
-            <div className="prose overflow-auto whitespace-normal max-w-3xl mx-auto rounded-2xl shadow-lg">
+            <div ref={markdownRef} className="prose prose-slate prose:sm max-w-none dark:prose-invert">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {summary}
               </ReactMarkdown>
@@ -365,28 +380,45 @@ const Home = () => {
 
             <div className="ml-6">
               <button
-              onClick={mode !== "pdf" ? handleDownload : handleDownloadFile}
-              className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-              disabled={downloading}
-            >
-              {downloading ? "Downloading..." : "Download PDF"}
-            </button>
-            <button
-              onClick={handleCopy}
-              className="mt-4 ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Copy Summary
-            </button>
+                onClick={mode !== "pdf" ? handleDownload : handleDownloadFile}
+                className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+                disabled={downloading}
+              >
+                {downloading ? "Downloading..." : "Download PDF"}
+              </button>
+              <button
+                onClick={handleCopy}
+                className="mt-4 ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Copy Summary
+              </button>
             </div>
           </div>
         )}
 
-        <button
-          onClick={saveNote}
-          className="bg-blue-600 text-white px-4 py-2 mt-6 rounded-lg"
-        >
-          Save to Dashboard
-        </button>
+        {/* Save to Dashboard */}
+        {/* {summary && ( */}
+       
+          <h1 className="text-3xl text-gray-600  font-bold mb-2 mt-20 text-white/90 ">Want to Save it ?</h1>
+          <form onSubmit={handleSaveToDashboard} className="mt-4 w-1/3 max-w-4xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
+            <label htmlFor="title" className="text-white">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              placeholder="Title"
+              className="w-full bg-transparent border px-4 py-3 rounded-xl border-gray-700 text-white p-2 resize-none outline-none placeholder-gray-500"
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 mt-6 rounded-lg"
+            >
+              {saving ? "Saving..." : "Save to Dashboard"}
+            </button>
+          </form>
+        {/* )} */}
       </main>
 
       {/* Footer */}

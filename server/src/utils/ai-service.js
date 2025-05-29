@@ -7,26 +7,33 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 async function summarizeTextWithGemini(fullText, mode) {
   let prompt = "";
   if (mode === "youtube") {
-    prompt = `Summarize this transcript into well-structured and visually appealing **Markdown notes**.
+    prompt = `You are a helpful assistant that creates clean, concise, and well-structured Markdown notes from YouTube video transcripts.
 
-🔹 The notes must include:
-- Proper headings using '#', '##', '###'
-- Bullet points with '-' or '*'
-- Bold text for important concepts using '**'
-- Emojis like ✅, ⚠️, 📌, ⭐ where appropriate
-- Clear sections: Introduction, Key Concepts, Benefits, Use Cases, Conclusion
-
-📌 Format the output for direct use in a markdown renderer (e.g., ReactMarkdown with Tailwind's 'prose' class).
-
-Example format:
-## 📦 Topic Title  
-### 1. Subheading  
-- ✅ Bullet point  
-- **Bold text** for emphasis  
-
-Return only clean Markdown. No HTML, no explanation.
-Text:
-${fullText}`;
+    🧠 Instructions:
+    - Use proper Markdown syntax:
+      - # for main titles
+      - ## for sections like "Introduction", "Key Concepts", "Benefits", "Conclusion"
+      - ### for smaller subtopics
+      - Bullet points using '-''
+      - Bold important keywords with '**bold**'
+      - Use emojis like ✅, ⚠️, 📌, ⭐ to enhance readability
+    - Keep formatting simple — no code blocks, no backticks, no raw HTML
+    - Make sure the notes are clear and **easy to read in a README file or blog post**
+    
+    📝 Sections to include:
+    ## Introduction  
+    ## Key Concepts / Topics  
+    ## Benefits / Use Cases  
+    ## Summary or Conclusion
+    
+    🎯 Final Output:
+    - Only return clean Markdown
+    - No code formatting (no triple backticks)
+    - No explanation or extra text
+    
+    Now, summarize the following transcript:
+    
+    ${fullText}`;
   } else if (mode === "notes") {
     prompt = `Summarize the following content into well-structured and visually appealing Markdown notes.
 

@@ -2,6 +2,7 @@ const { YoutubeTranscript } = require("youtube-transcript");
 const summarizeTextWithGemini = require("../utils/ai-service");
 const generatePdfBuffer = require("../utils/generatePdf");
 const {
+  extractTextFromPdf,
   extractTextFromDocx,
   extractTextFromPptx,
   extractTextFromTxt,
@@ -71,21 +72,21 @@ exports.summarizePdf = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
-
     console.log(req.file);
 
     const mime = req.file.mimetype;
     let extractedText = "";
 
     if (mime === "application/pdf") {
-      extractedText = await extractTextFromDocx(req.file.buffer);
+      extractedText = await extractTextFromPdf(req.file.buffer);
     } else if (
-      mime ===
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      mime === "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ) {
       extractedText = await extractTextFromPptx(req.file.buffer);
     } else if (mime === "text/plain") {
       extractedText = await extractTextFromTxt(req.file.buffer);
+    } else if (mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+      extractedText = await extractTextFromDocx(req.file.buffer);
     } else {
       return res.status(400).json({ error: "Unsupported file format" });
     }

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
-import { ArrowBigLeft } from "lucide-react";
+import { ArrowBigLeft, Copy } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function Chat() {
   const { id } = useParams();
@@ -23,6 +25,7 @@ function Chat() {
             },
           }
         );
+
         setNote(res.data);
         console.log("Note : ", res.data);
       } catch (err) {
@@ -48,7 +51,7 @@ function Chat() {
 
       const link = document.createElement("a");
       link.href = url;
-      link.download = "document-summary.pdf";
+      link.download = `${note.title}-summary.pdf`;
       link.click();
 
       window.URL.revokeObjectURL(url);
@@ -56,6 +59,18 @@ function Chat() {
       alert("Failed to download PDF.");
     }
     setDownloading(false);
+  };
+
+  const handleCopy = () => {
+    if (summary) {
+      const plainText = summary
+        .replace(/###\s?/g, "")
+        .replace(/##\s?/g, "")
+        .replace(/#\s?/g, "")
+        .replace(/\*\*/g, "")
+
+      navigator.clipboard.writeText(plainText);
+    }
   };
 
   if (!note) {
@@ -67,7 +82,7 @@ function Chat() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10">
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-2xl" />
       <Link
         to="/home"
@@ -77,10 +92,20 @@ function Chat() {
         Back
       </Link>
       <Sidebar />
-      <div className="bg-white shadow-xl rounded-2xl p-6 max-w-2xl w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-3">{note.title}</h1>
-        <p className="text-gray-700 mb-4">{note.content}</p>
-        <p className="text-sm text-gray-400">
+      <div className="flex justify-between items-center w-1/2 mb-4">
+        <h1 className="text-4xl underline text-white font-bold text-white mb-3">{note.title.replace(new Date(note.createdAt).toLocaleString(), "")}</h1>
+        <button onClick={handleCopy} className="text-white-500 px-4 py-2 rounded-md bg-green-500 hover:bg-green-600">
+         <span className="flex items-center gap-2"> <Copy /> Copy</span>
+          
+          </button>
+      </div>
+      <div className="w-1/2 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
+        <div className="prose prose-slate prose-sm max-w-none dark:prose-invert">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {note.content}
+          </ReactMarkdown>
+        </div>
+        <p className="text-sm text-blue-500 mt-8">
           Created At: {new Date(note.createdAt).toLocaleString()}
         </p>
       </div>

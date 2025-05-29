@@ -7,9 +7,12 @@ import { ArrowBigLeft } from "lucide-react";
 const ProfilePage = () => {
   const { user, logout } = useContext(AuthContext);
 
+  console.log(user);
+
   // Create a random avatar URL using DiceBear
   const randomSeed = user.name + Math.floor(Math.random() * 10000);
   const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${randomSeed}`;
+
 
   return (
     // <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-xl" />
@@ -28,8 +31,8 @@ const ProfilePage = () => {
           alt="User Avatar"
           className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500"
         />
-        <h2 className="text-xl font-bold">{user?.user?.name}</h2>
-        <p className=" mb-6">{user?.user?.email}</p>
+        <h2 className="text-xl font-bold">{user?.name}</h2>
+        <p className=" mb-6">{user?.email}</p>
 
         <div className="space-y-3">
           <Link
