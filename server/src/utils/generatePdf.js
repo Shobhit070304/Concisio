@@ -21,7 +21,12 @@ const generatePdfBuffer = async (markdownText) => {
     </html>
   `;
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: true,
+  });
+
+  // const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(finalHtml);
   const pdfBuffer = await page.pdf({ format: 'A4' });

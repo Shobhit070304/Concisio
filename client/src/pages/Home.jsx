@@ -103,30 +103,6 @@ const Home = () => {
     }
   };
 
-  const handleDownload = async () => {
-    setDownloading(true);
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/summarize/download-pdf`,
-        { summary },
-        { responseType: "blob" }
-      );
-
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "summary.pdf";
-      link.click();
-
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      alert("Error downloading PDF");
-    }
-    setDownloading(false);
-  };
-
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setSummary("");
@@ -162,7 +138,6 @@ const Home = () => {
   };
 
   const handleDownloadFile = async () => {
-    console.log("Hello")
     setDownloading(true);
     try {
       const res = await axios.post(
@@ -176,7 +151,7 @@ const Home = () => {
 
       const link = document.createElement("a");
       link.href = url;
-      link.download = "document-summary.pdf";
+      link.download = "summary.pdf";
       link.click();
 
       window.URL.revokeObjectURL(url);
@@ -320,31 +295,28 @@ const Home = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             onClick={() => setMode("youtube")}
-            className={`px-4 py-2 rounded-lg ${
-              mode === "youtube"
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            } transition`}
+            className={`px-4 py-2 rounded-lg ${mode === "youtube"
+              ? "bg-white text-black"
+              : "bg-white/10 text-white hover:bg-white/20"
+              } transition`}
           >
             YouTube
           </button>
           <button
             onClick={() => setMode("notes")}
-            className={`px-4 py-2 rounded-lg ${
-              mode === "notes"
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            } transition`}
+            className={`px-4 py-2 rounded-lg ${mode === "notes"
+              ? "bg-white text-black"
+              : "bg-white/10 text-white hover:bg-white/20"
+              } transition`}
           >
             Notes
           </button>
           <button
             onClick={() => setMode("file")}
-            className={`px-4 py-2 rounded-lg ${
-              mode === "file"
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            } transition`}
+            className={`px-4 py-2 rounded-lg ${mode === "file"
+              ? "bg-white text-black"
+              : "bg-white/10 text-white hover:bg-white/20"
+              } transition`}
           >
             File
           </button>
@@ -389,7 +361,7 @@ const Home = () => {
 
             <div className="ml-6">
               <button
-                onClick={mode !== "pdf" ? handleDownload : handleDownloadFile}
+                onClick={handleDownloadFile}
                 className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
                 disabled={downloading}
               >
