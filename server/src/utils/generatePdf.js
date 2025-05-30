@@ -43,7 +43,8 @@ const markdownpdf = require("markdown-pdf");
 const fs = require("fs-extra");
 const path = require("path");
 const os = require("os");
-const cssPath = path.join(__dirname, "../styles/pdf-style.css");
+const cssPath = path.resolve(__dirname, "../styles/pdf-style.css");
+const css = fs.readFileSync(cssPath, "utf-8");
 
 const generatePdfBuffer = async (markdownText) => {
   const tempDir = os.tmpdir(); // Get temp folder
