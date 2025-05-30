@@ -38,6 +38,10 @@ exports.summarizeVideo = async (req, res) => {
 
 exports.downloadPdf = async (req, res) => {
   const { summary } = req.body;
+
+  if (!summary || typeof summary !== 'string' || summary.trim() === '') {
+    return res.status(400).json({ error: "Invalid or empty summary text" });
+  }
   try {
     const pdfBuffer = await generatePdfBuffer(summary);
     res.set({
