@@ -38,7 +38,6 @@ exports.summarizeVideo = async (req, res) => {
 
 exports.downloadPdf = async (req, res) => {
   const { summary } = req.body;
-
   try {
     const pdfBuffer = await generatePdfBuffer(summary);
     res.set({
@@ -78,12 +77,16 @@ exports.summarizePdf = async (req, res) => {
     if (mime === "application/pdf") {
       extractedText = await extractTextFromPdf(req.file.buffer);
     } else if (
-      mime === "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      mime ===
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ) {
       extractedText = await extractTextFromPptx(req.file.buffer);
     } else if (mime === "text/plain") {
       extractedText = await extractTextFromTxt(req.file.buffer);
-    } else if (mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    } else if (
+      mime ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
       extractedText = await extractTextFromDocx(req.file.buffer);
     } else {
       return res.status(400).json({ error: "Unsupported file format" });

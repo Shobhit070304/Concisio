@@ -33,7 +33,6 @@ const Home = () => {
   const [notes, setNotes] = useState("");
   const [mode, setMode] = useState("youtube");
   const [file, setFile] = useState(null);
-  const [pdfUrl, setPdfUrl] = useState(null);
   const [title, setTitle] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -163,6 +162,7 @@ const Home = () => {
   };
 
   const handleDownloadFile = async () => {
+    console.log("Hello")
     setDownloading(true);
     try {
       const res = await axios.post(
