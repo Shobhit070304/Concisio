@@ -5,15 +5,11 @@ const connectDB = require("./db/db");
 const authRoutes = require("./routes/user-routes");
 const summarizeRoutes = require("./routes/summarizer-routes");
 const noteRoutes = require("./routes/notes-routes");
-const path = require("path");
 
 dotenv.config();
 connectDB();
 
 const app = express();
-
-// Serve static files from client/dist
-app.use(express.static(path.join(__dirname, "client", "dist")));
 
 app.use(
   cors({
