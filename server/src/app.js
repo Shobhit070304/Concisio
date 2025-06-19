@@ -11,12 +11,16 @@ connectDB();
 
 const app = express();
 
+// Serve static files from client/dist
+app.use(express.static(path.join(__dirname, "client", "dist")));
+
 app.use(
   cors({
     origin: "*", // OR: 'http://localhost:3000' or the frontend URL
     credentials: true,
   })
 );
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

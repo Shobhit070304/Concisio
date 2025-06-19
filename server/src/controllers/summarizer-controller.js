@@ -8,8 +8,10 @@ const {
   extractTextFromTxt,
 } = require("../utils/extractText");
 
+
 exports.summarizeVideo = async (req, res) => {
   const { videoUrl } = req.body;
+  console.log("Video URL:", videoUrl);
 
   if (!videoUrl) {
     return res.status(400).json({ error: "Video URL is required" });
@@ -21,12 +23,15 @@ exports.summarizeVideo = async (req, res) => {
     videoId = urlObj.searchParams.get("v") || urlObj.pathname.split("/").pop();
     if (!videoId) throw new Error("Invalid video URL format");
   } catch (e) {
-    return res.status(400).json({ error: "Invalid YouTube URL" });
+    return res.status(404).json({ error: "Invalid YouTube URL" });
   }
+  console.log("Extracted Video ID:", videoId);
 
   try {
     const transcript = await YoutubeTranscript.fetchTranscript(videoId);
+    console.log("Transcript:", transcript);
     const fullText = transcript.map((t) => t.text).join(" ");
+    console.log("FullText:", fullText);
 
     const summary = await summarizeTextWithGemini(fullText, "youtube");
     res.status(200).json({ summary });
@@ -39,7 +44,7 @@ exports.summarizeVideo = async (req, res) => {
 exports.downloadPdf = async (req, res) => {
   const { summary } = req.body;
 
-  if (!summary || typeof summary !== 'string' || summary.trim() === '') {
+  if (!summary || typeof summary !== "string" || summary.trim() === "") {
     return res.status(400).json({ error: "Invalid or empty summary text" });
   }
   try {

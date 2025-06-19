@@ -15,7 +15,7 @@ const Home = () => {
         <Background />
       </div>
       <div className="w-full flex items-center justify-between px-[10%]">
-        <h1 className="text-2xl absolute top-4 left-32 z-20 font-bold">NoteTube</h1>
+        <h1 className="text-2xl absolute top-4 left-32 z-20 font-bold">Concisio</h1>
 
       
       {!user ? (

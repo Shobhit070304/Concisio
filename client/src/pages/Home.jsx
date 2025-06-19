@@ -1,9 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import UserContext, { AuthContext } from "../context/UserContext";
+import { toast } from "react-toastify";
 
 const suggestions = [
   {
@@ -36,11 +38,17 @@ const Home = () => {
   const [title, setTitle] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const { user } = useContext(AuthContext);
+
   const handleSuggestionClick = (url) => {
     setInput(url);
   };
 
   const handleSummarizeVideo = async () => {
+    if (!user) {
+      toast.error("Please login to summarize videos");
+      return;
+    }
     if (!input.trim()) {
       alert("Please enter a YouTube video link.");
       return;
@@ -54,13 +62,16 @@ const Home = () => {
           videoUrl: input.trim(),
         }
       );
-      //Remove ```markdown\n from the summary
-      const output = res.data.summary
-        .replace("```markdown\n", "")
-        .replace("\n```", "");
+      console.log("Response:", res);
 
       if (res.status === 200) {
+        //Remove ```markdown\n from the summary
+        const output = res.data.summary
+          .replace("```markdown\n", "")
+          .replace("\n```", "");
         setSummary(output);
+      } else if (res.status === 201) {
+        toast.error("Transcript not available for this video");
       } else {
         alert("Failed to summarize video. Please try again.");
       }
@@ -74,6 +85,10 @@ const Home = () => {
   };
 
   const handleSummarizeNotes = async () => {
+    if (!user) {
+      toast.error("Please login to summarize notes");
+      return;
+    }
     if (!notes.trim()) {
       alert("Please enter your notes.");
       return;
@@ -109,6 +124,10 @@ const Home = () => {
   };
 
   const handleSummarizeFile = async () => {
+    if (!user) {
+      toast.error("Please login to summarize files");
+      return;
+    }
     if (!file) {
       alert("Please select a document file");
       return;
@@ -295,28 +314,31 @@ const Home = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             onClick={() => setMode("youtube")}
-            className={`px-4 py-2 rounded-lg ${mode === "youtube"
-              ? "bg-white text-black"
-              : "bg-white/10 text-white hover:bg-white/20"
-              } transition`}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "youtube"
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            } transition`}
           >
             YouTube
           </button>
           <button
             onClick={() => setMode("notes")}
-            className={`px-4 py-2 rounded-lg ${mode === "notes"
-              ? "bg-white text-black"
-              : "bg-white/10 text-white hover:bg-white/20"
-              } transition`}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "notes"
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            } transition`}
           >
             Notes
           </button>
           <button
             onClick={() => setMode("file")}
-            className={`px-4 py-2 rounded-lg ${mode === "file"
-              ? "bg-white text-black"
-              : "bg-white/10 text-white hover:bg-white/20"
-              } transition`}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "file"
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            } transition`}
           >
             File
           </button>

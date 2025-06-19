@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/UserContext";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,13 +10,18 @@ export default function Sidebar() {
   const toggleButtonRef = useRef(null);
 
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-
+  const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   const fetchNotes = async () => {
+    if (!user) {
+      toast.error("You need to be logged in to view notes.");
+      return;
+    }
+    setLoading(true);
     const token = localStorage.getItem("token");
     try {
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/note/all`, {
@@ -24,7 +31,8 @@ export default function Sidebar() {
       });
       setNotes(res.data);
     } catch (err) {
-      alert("Failed to fetch notes");
+      toast.error("Failed to fetch notes. Please try again later.");
+      // Optionally, you can set an error state here to display an error message
     }
     setLoading(false);
   };
@@ -77,11 +85,14 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-64 bg-zinc-800/50 backdrop-blur-lg text-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${isOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed top-0 left-0 h-full w-64 bg-zinc-800/50 backdrop-blur-lg text-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="p-4 border-b border-gray-700">
-          <h2 className="text-lg text-center font-semibold text-gray-100">History</h2>
+          <h2 className="text-lg text-center font-semibold text-gray-100">
+            History
+          </h2>
         </div>
 
         <div className="p-4">
@@ -99,7 +110,11 @@ export default function Sidebar() {
                     className="group flex justify-between items-center p-2 rounded-md hover:bg-gray-700/30 transition-colors duration-150 cursor-pointer"
                   >
                     <span className="text-gray-200 text-sm truncate max-w-[70%] group-hover:text-blue-400 transition-colors">
-                      {note.title.split(new Date(note.createdAt).toLocaleString())[0]}
+                      {
+                        note.title.split(
+                          new Date(note.createdAt).toLocaleString()
+                        )[0]
+                      }
                     </span>
                     <span className="text-gray-500 text-xs whitespace-nowrap">
                       {new Date(note.createdAt).toLocaleString().split(",")[0]}
