@@ -1,13 +1,14 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Background from "../Backgrounds/Background";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader, Loader2, Loader2Icon, LoaderIcon } from "lucide-react";
 import { AuthContext } from "../context/UserContext";
 import axios from "axios";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -28,6 +30,8 @@ const Login = () => {
       navigate("/home");
     } catch (err) {
       setError("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,7 +84,7 @@ const Login = () => {
               type="submit"
               className="w-full px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-100 transition-all"
             >
-              Login
+              {loading ? "logging in..." : "Login "}
             </button>
           </form>
           <p className="mt-4 text-center text-white/60">

@@ -12,18 +12,20 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
@@ -39,6 +41,8 @@ const Signup = () => {
       navigate("/home");
     } catch (err) {
       setError("Failed to create account");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,7 +119,7 @@ const Signup = () => {
               type="submit"
               className="w-full px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-100 transition-all"
             >
-              Sign up
+              {loading ? "Creating account..." : "Sign Up"}
             </button>
           </form>
           <p className="mt-4 text-center text-white/60">

@@ -8,7 +8,6 @@ const {
   extractTextFromTxt,
 } = require("../utils/extractText");
 
-
 exports.summarizeVideo = async (req, res) => {
   const { videoUrl } = req.body;
   console.log("Video URL:", videoUrl);
@@ -76,6 +75,7 @@ exports.summarizeNotes = async (req, res) => {
 };
 
 exports.summarizePdf = async (req, res) => {
+  console.log("Received file:", req.file);
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -90,6 +90,8 @@ exports.summarizePdf = async (req, res) => {
       "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ) {
       extractedText = await extractTextFromPptx(req.file.buffer);
+    } else if (mime === "application/vnd.ms-powerpoint") {
+      extractedText = await extractTextFromPptx(req.file.buffer);
     } else if (mime === "text/plain") {
       extractedText = await extractTextFromTxt(req.file.buffer);
     } else if (
@@ -100,6 +102,7 @@ exports.summarizePdf = async (req, res) => {
     } else {
       return res.status(400).json({ error: "Unsupported file format" });
     }
+    console.log("Extracted Text:", extractedText);
 
     const summary = await summarizeTextWithGemini(extractedText, "pdf");
     res.status(200).json({ summary });
