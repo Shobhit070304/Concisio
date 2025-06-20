@@ -57,7 +57,7 @@ function Chat() {
       window.URL.revokeObjectURL(url);
       toast.success("PDF downloaded successfully!");
     } catch (err) {
-      alert("Failed to download PDF.");
+      toast.error("Failed to download PDF.");
     }
     setDownloading(false);
   };

@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  ArrowBigLeft,
-  ArrowBigRight,
-  Trash2Icon,
-} from "lucide-react";
+import { ArrowBigLeft, ArrowBigRight, Trash2Icon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Sidebar from "../components/Sidebar";
@@ -28,7 +24,7 @@ export default function Dashboard() {
       });
       setNotes(res.data);
     } catch (err) {
-      alert("Failed to fetch notes");
+      toast.error("Failed to fetch notes");
     }
     setLoading(false);
   };
@@ -45,8 +41,9 @@ export default function Dashboard() {
         }
       );
       fetchNotes();
+      toast.success("Note deleted successfully");
     } catch (err) {
-      alert("Failed to delete note");
+      toast.error("Failed to delete note");
     }
   };
 
@@ -72,8 +69,9 @@ export default function Dashboard() {
       link.click();
 
       window.URL.revokeObjectURL(url);
+      toast.success("Note downloaded successfully");
     } catch (err) {
-      alert("Failed to download note");
+      toast.error("Failed to download note");
     }
   };
 
@@ -81,9 +79,7 @@ export default function Dashboard() {
     fetchNotes();
   }, []);
 
-  useEffect(() => {
-  }, [notes]);
-
+  useEffect(() => {}, [notes]);
 
   return (
     <>
@@ -120,8 +116,16 @@ export default function Dashboard() {
                 }}
               >
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-semibold mb-3">{note.title.replace(new Date(note.createdAt).toLocaleString(), "")}</h3>
-                  <button onClick={() => deleteNote(note._id)} className="text-red-500 rounded-md">
+                  <h3 className="text-xl font-semibold mb-3">
+                    {note.title.replace(
+                      new Date(note.createdAt).toLocaleString(),
+                      ""
+                    )}
+                  </h3>
+                  <button
+                    onClick={() => deleteNote(note._id)}
+                    className="text-red-500 rounded-md"
+                  >
                     <Trash2Icon size={20} />
                   </button>
                 </div>

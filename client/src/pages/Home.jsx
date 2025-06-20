@@ -50,7 +50,7 @@ const Home = () => {
       return;
     }
     if (!input.trim()) {
-      alert("Please enter a YouTube video link.");
+      toast.info("Please enter a YouTube video link.");
       return;
     }
     try {
@@ -62,7 +62,6 @@ const Home = () => {
           videoUrl: input.trim(),
         }
       );
-      console.log("Response:", res);
 
       if (res.status === 200) {
         //Remove ```markdown\n from the summary
@@ -75,11 +74,10 @@ const Home = () => {
           "Transcript not available for this video, please add the transcript manually"
         );
       } else {
-        alert("Failed to summarize video. Please try again.");
+        toast.error("Failed to summarize video. Please try again.");
       }
     } catch (error) {
-      console.error("Error summarizing video:", error);
-      alert("An error occurred while summarizing the video. Please try again.");
+      toast.error("An error occurred while summarizing the video. Please try again.");
     } finally {
       setInput("");
       setLoading(false);
@@ -92,7 +90,7 @@ const Home = () => {
       return;
     }
     if (!notes.trim()) {
-      alert("Please enter your notes.");
+      toast.info("Please enter your notes.");
       return;
     }
     try {
@@ -109,11 +107,10 @@ const Home = () => {
           .replace("\n```", "");
         setSummary(output);
       } else {
-        alert("Failed to summarize notes. Please try again.");
+        toast.error("Failed to summarize notes. Please try again.");
       }
     } catch (error) {
-      console.error("Error summarizing notes:", error);
-      alert("An error occurred while summarizing the notes. Please try again.");
+      toast.error("An error occurred while summarizing the notes. Please try again.");
     } finally {
       setLoading(false);
       setNotes("");
@@ -131,7 +128,7 @@ const Home = () => {
       return;
     }
     if (!file) {
-      alert("Please select a document file");
+      toast.info("Please select a document file");
       return;
     }
 
@@ -158,7 +155,7 @@ const Home = () => {
         );
       }
     } catch (err) {
-      alert("Failed to upload and summarize document");
+      toast.error("Failed to upload and summarize document");
     }
     setLoading(false);
   };
@@ -182,7 +179,7 @@ const Home = () => {
 
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert("Failed to download PDF.");
+      toast.error("Failed to download PDF.");
     }
     setDownloading(false);
   };
@@ -192,7 +189,7 @@ const Home = () => {
     setSaving(true);
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login to save your note");
+      toast.info("Please login to save your note");
       return;
     }
     let date = new Date().toLocaleString();
@@ -214,7 +211,7 @@ const Home = () => {
         setTitle("");
       }
     } catch (err) {
-      alert("Failed to save note");
+      toast.error("Failed to save note");
     } finally {
       setSaving(false);
     }
