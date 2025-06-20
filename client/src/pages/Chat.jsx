@@ -95,7 +95,7 @@ function Chat() {
       </Link>
       <Sidebar />
       <div className="flex justify-between items-center w-1/2 mb-4">
-        <h1 className="text-4xl underline text-white font-bold text-white mb-3">
+        <h1 className="text-4xl underline text-white font-bold mb-3">
           {note.title.replace(new Date(note.createdAt).toLocaleString(), "")}
         </h1>
         <button
