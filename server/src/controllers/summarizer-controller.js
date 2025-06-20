@@ -82,33 +82,42 @@ exports.summarizePdf = async (req, res) => {
     }
     const mime = req.file.mimetype;
     let extractedText = "";
+    let summary = ""
 
     if (mime === "application/pdf") {
       extractedText = await extractTextFromPdf(req.file.buffer);
-    } else if (
-      mime ===
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-    ) {
+      summary = await summarizeTextWithGemini(extractedText, "pdf");
+    } 
+
+    else if ( mime === "application/vnd.openxmlformats-officedocument.presentationml.presentation") {
       extractedText = await extractTextFromPptx(req.file.buffer);
-      const summary = await summarizeTextWithGemini(extractedText, "pptx");
-      return res.status(200).json({ summary });
-    } else if (mime === "application/vnd.ms-powerpoint") {
+      summary = await summarizeTextWithGemini(extractedText, "pptx");
+    } 
+
+    else if (mime === "application/vnd.ms-powerpoint") {
       extractedText = await extractTextFromPptx(req.file.buffer);
-      const summary = await summarizeTextWithGemini(extractedText, "pptx");
-      return res.status(200).json({ summary });
-    } else if (mime === "text/plain") {
+      summary = await summarizeTextWithGemini(extractedText, "pptx");
+    } 
+
+    else if (mime === "text/plain") {
       extractedText = await extractTextFromTxt(req.file.buffer);
-    } else if (
-      mime ===
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
+      summary = await summarizeTextWithGemini(extractedText, "pdf");
+    } 
+
+    else if ( mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
       extractedText = await extractTextFromDocx(req.file.buffer);
-    } else {
+    } 
+
+    else {
       return res.status(400).json({ error: "Unsupported file format" });
     }
-    console.log("Extracted Text:", extractedText);
+    
+    if (!extractedText || extractedText.trim().length === 0) {
+      return res
+        .status(201)
+        .json({ error: "No text extracted from the document" });
+    }
 
-    const summary = await summarizeTextWithGemini(extractedText, "pdf");
     res.status(200).json({ summary });
   } catch (err) {
     console.error(err);

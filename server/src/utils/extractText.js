@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const fsSync = require("fs");
 const path = require("path");
 const pdfParse = require("pdf-parse");
-const PPTX2Json = require('pptx2json');
+const PPTX2Json = require("pptx2json");
 const pptx2json = new PPTX2Json();
 
 // Extract text from PDF file
@@ -59,9 +59,11 @@ async function extractTextFromPptx(buffer) {
     }
 
     // Clean up: remove empty lines, trim, and deduplicate
-    const cleanedLines = Array.from(new Set(
-      lines.map(line => line.trim()).filter(line => line.length > 0)
-    ));
+    const cleanedLines = Array.from(
+      new Set(
+        lines.map((line) => line.trim()).filter((line) => line.length > 0)
+      )
+    );
 
     return cleanedLines.join("\n");
   } catch (err) {

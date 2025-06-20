@@ -147,11 +147,16 @@ const Home = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
-      const output = res.data.summary
-        .replace("```markdown\n", "")
-        .replace("\n```", "");
-      setSummary(output);
+      if (res.status === 200) {
+        const output = res.data.summary
+          .replace("```markdown\n", "")
+          .replace("\n```", "");
+        setSummary(output);
+      } else if (res.status === 201) {
+        toast.error(
+          "No text found in the document. Please upload a valid document."
+        );
+      }
     } catch (err) {
       alert("Failed to upload and summarize document");
     }
