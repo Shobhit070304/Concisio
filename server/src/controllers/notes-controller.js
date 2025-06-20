@@ -7,7 +7,7 @@ exports.createNote = async (req, res) => {
   try {
     const note = new Note({ user: req.user, title, content });
     await note.save();
-    res.json({ success: true, note });
+    res.status(200).json({ success: true, note });
   } catch (err) {
     res.status(500).json({ error: "Failed to save note" });
   }
@@ -23,7 +23,6 @@ exports.getNotes = async (req, res) => {
 };
 
 exports.getNote = async (req, res) => {
-
   try {
     const { id } = req.params;
     const note = await Note.findOne({ user: req.user, _id: id });
@@ -49,7 +48,9 @@ exports.downloadNote = async (req, res) => {
     const pdfBuffer = await generatePdfBuffer(note.content);
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${note.title || "note"}.pdf"`,
+      "Content-Disposition": `attachment; filename="${
+        note.title || "note"
+      }.pdf"`,
       "Content-Length": pdfBuffer.length,
     });
     res.send(pdfBuffer);

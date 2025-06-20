@@ -10,7 +10,6 @@ const {
 
 exports.summarizeVideo = async (req, res) => {
   const { videoUrl } = req.body;
-  console.log("Video URL:", videoUrl);
 
   if (!videoUrl) {
     return res.status(400).json({ error: "Video URL is required" });
@@ -24,13 +23,15 @@ exports.summarizeVideo = async (req, res) => {
   } catch (e) {
     return res.status(404).json({ error: "Invalid YouTube URL" });
   }
-  console.log("Extracted Video ID:", videoId);
 
   try {
     const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    console.log("Transcript:", transcript);
+    if (!transcript || transcript.length === 0) {
+      return res
+        .status(201)
+        .json({ error: "No transcript found for this video" });
+    }
     const fullText = transcript.map((t) => t.text).join(" ");
-    console.log("FullText:", fullText);
 
     const summary = await summarizeTextWithGemini(fullText, "youtube");
     res.status(200).json({ summary });
@@ -75,7 +76,6 @@ exports.summarizeNotes = async (req, res) => {
 };
 
 exports.summarizePdf = async (req, res) => {
-  console.log("Received file:", req.file);
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -90,8 +90,12 @@ exports.summarizePdf = async (req, res) => {
       "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ) {
       extractedText = await extractTextFromPptx(req.file.buffer);
+      const summary = await summarizeTextWithGemini(extractedText, "pptx");
+      return res.status(200).json({ summary });
     } else if (mime === "application/vnd.ms-powerpoint") {
       extractedText = await extractTextFromPptx(req.file.buffer);
+      const summary = await summarizeTextWithGemini(extractedText, "pptx");
+      return res.status(200).json({ summary });
     } else if (mime === "text/plain") {
       extractedText = await extractTextFromTxt(req.file.buffer);
     } else if (

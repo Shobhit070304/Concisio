@@ -72,6 +72,24 @@ Return only the Markdown-formatted content. No extra commentary.
 
 Extracted Notes: ${fullText}`;
 
+} 
+else if (mode === "pptx") {
+  prompt = `You are a helpful assistant that creates concise, well-structured, and visually appealing Markdown notes from PowerPoint (PPTX) slide content.
+🧠 Instructions:
+- Treat each slide as a section or bullet point in the notes.
+- Use slide titles as section headings (# or ## in Markdown).
+- Use bullet points for slide content.
+- Bold important keywords using **word**.
+- Add emojis (✅, ⚠️, 📌, ⭐) for visual clarity.
+- Remove slide numbers, repetitive headers/footers, or irrelevant text.
+- Organize into logical sections: Introduction, Main Points, Key Takeaways, Summary, etc.
+
+🎯 Output:
+- Only return clean Markdown (no HTML, no code blocks).
+- Suitable for ReactMarkdown + Tailwind CSS 'prose' renderer.
+
+Slides Content:
+${fullText}`;
   } else {
     throw new Error("Invalid mode specified");
   }

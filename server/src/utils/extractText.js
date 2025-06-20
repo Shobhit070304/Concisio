@@ -45,18 +45,25 @@ async function extractTextFromPptx(buffer) {
     await fs.unlink(tmpPath);
 
     // Extract text
-    let text = "";
+    let lines = [];
     if (result.slides && Array.isArray(result.slides)) {
       result.slides.forEach((slide) => {
         if (slide.texts && Array.isArray(slide.texts)) {
           slide.texts.forEach((textItem) => {
-            text += textItem.text + "\n";
+            if (textItem.text && typeof textItem.text === "string") {
+              lines.push(textItem.text.trim());
+            }
           });
         }
       });
     }
 
-    return text.trim();
+    // Clean up: remove empty lines, trim, and deduplicate
+    const cleanedLines = Array.from(new Set(
+      lines.map(line => line.trim()).filter(line => line.length > 0)
+    ));
+
+    return cleanedLines.join("\n");
   } catch (err) {
     console.error("Error extracting PPTX text:", err);
     throw new Error("Failed to parse PPTX");

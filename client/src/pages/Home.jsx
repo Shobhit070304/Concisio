@@ -71,7 +71,9 @@ const Home = () => {
           .replace("\n```", "");
         setSummary(output);
       } else if (res.status === 201) {
-        toast.error("Transcript not available for this video");
+        toast.error(
+          "Transcript not available for this video, please add the transcript manually"
+        );
       } else {
         alert("Failed to summarize video. Please try again.");
       }
@@ -202,7 +204,10 @@ const Home = () => {
           },
         }
       );
-      alert("Note saved successfully");
+      if (res.status === 200) {
+        toast.success("Note saved successfully!");
+        setTitle("");
+      }
     } catch (err) {
       alert("Failed to save note");
     } finally {
@@ -219,6 +224,7 @@ const Home = () => {
         .replace(/\*\*/g, "");
 
       navigator.clipboard.writeText(plainText);
+      toast.success("Summary copied to clipboard!");
     }
   };
 

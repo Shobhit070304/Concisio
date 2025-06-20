@@ -5,11 +5,12 @@ import Sidebar from "../components/Sidebar";
 import { ArrowBigLeft, Copy } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { toast } from "react-toastify";
 
 function Chat() {
   const { id } = useParams();
   const [note, setNote] = useState();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
@@ -27,7 +28,6 @@ function Chat() {
         );
 
         setNote(res.data);
-        console.log("Note : ", res.data);
       } catch (err) {
         alert("Failed to fetch notes");
       }
@@ -55,6 +55,7 @@ function Chat() {
       link.click();
 
       window.URL.revokeObjectURL(url);
+      toast.success("PDF downloaded successfully!");
     } catch (err) {
       alert("Failed to download PDF.");
     }
@@ -62,14 +63,15 @@ function Chat() {
   };
 
   const handleCopy = () => {
-    if (summary) {
-      const plainText = summary
+    if (note && note.content) {
+      const plainText = note.content
         .replace(/###\s?/g, "")
         .replace(/##\s?/g, "")
         .replace(/#\s?/g, "")
-        .replace(/\*\*/g, "")
+        .replace(/\*\*/g, "");
 
       navigator.clipboard.writeText(plainText);
+      toast.success("Text copied to clipboard!");
     }
   };
 
@@ -93,11 +95,18 @@ function Chat() {
       </Link>
       <Sidebar />
       <div className="flex justify-between items-center w-1/2 mb-4">
-        <h1 className="text-4xl underline text-white font-bold text-white mb-3">{note.title.replace(new Date(note.createdAt).toLocaleString(), "")}</h1>
-        <button onClick={handleCopy} className="text-white-500 px-4 py-2 rounded-md bg-green-500 hover:bg-green-600">
-         <span className="flex items-center gap-2"> <Copy /> Copy</span>
-          
-          </button>
+        <h1 className="text-4xl underline text-white font-bold text-white mb-3">
+          {note.title.replace(new Date(note.createdAt).toLocaleString(), "")}
+        </h1>
+        <button
+          onClick={handleCopy}
+          className="text-white-500 px-4 py-2 rounded-md bg-green-500 hover:bg-green-600"
+        >
+          <span className="flex items-center gap-2">
+            {" "}
+            <Copy /> Copy
+          </span>
+        </button>
       </div>
       <div className="w-1/2 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
         <div className="prose prose-slate prose-sm max-w-none dark:prose-invert">
