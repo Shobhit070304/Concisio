@@ -13,43 +13,57 @@ const ProfilePage = () => {
   const randomSeed = user.name + Math.floor(Math.random() * 10000);
   const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${randomSeed}`;
 
-
   return (
-    // <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-xl" />
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6 fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-xl">
+    <div className="min-h-screen flex flex-col items-center justify-center relative bg-gradient-to-br from-amber-50 to-amber-100 px-6">
+      {/* Background elements */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(17,24,39,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,24,39,0.08) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          opacity: 0.15,
+        }}
+      />
+
+      {/* Back Button */}
       <Link
         to="/home"
-        className="px-4 py-2 flex gap-2 absolute top-4 left-4 rounded-md text-white bg-black hover:bg-gray-800"
+        className="absolute top-6 left-6 px-4 py-2 flex items-center gap-2 text-amber-900 hover:text-amber-700 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition"
       >
-        <ArrowBigLeft />
+        <ArrowBigLeft className="w-5 h-5" />
         Back
       </Link>
 
-      <div className="bg-gray-800 text-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center">
+      {/* Profile Content */}
+      <div className="flex flex-col items-center text-center max-w-xs w-full">
         <img
           src={avatar}
           alt="User Avatar"
-          className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-blue-500"
+          className="w-24 h-24 rounded-full border-4 border-white shadow-lg shadow-amber-200/50 mb-6"
         />
-        <h2 className="text-xl font-bold">{user?.name}</h2>
-        <p className=" mb-6">{user?.email}</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-1">{user?.name}</h2>
+        <p className="text-amber-800/70 mb-8">{user?.email}</p>
 
-        <div className="space-y-3">
-          <Link
-            to="/dashboard"
-            className="w-full flex justify-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/update-profile"
-            className="w-full flex justify-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Update Profile
-          </Link>
+        <div className="flex flex-col gap-3 w-full">
+          <div className="w-full flex gap-2 items-center">
+            <Link
+              to="/dashboard"
+              className="py-2 px-4 w-1/2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition shadow-sm hover:shadow-md"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/update-profile"
+              className="py-2 px-4 w-1/2 rounded-lg bg-gray-800 text-white hover:bg-gray-900 transition shadow-sm hover:shadow-md"
+            >
+              Update Profile
+            </Link>
+          </div>
           <button
             onClick={logout}
-            className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+            className="py-2 px-4 rounded-lg bg-red-500 text-white hover:bg-red-600 transition shadow-sm hover:shadow-md"
           >
             Logout
           </button>

@@ -1,5 +1,4 @@
-const { YoutubeTranscript } = require("youtube-transcript");
-const summarizeTextWithGemini = require("../utils/ai-service");
+// const { YoutubeTranscript } = require("youtube-transcript");
 const generatePdfBuffer = require("../utils/generatePdf");
 const {
   extractTextFromPdf,
@@ -7,9 +6,13 @@ const {
   extractTextFromPptx,
   extractTextFromTxt,
 } = require("../utils/extractText");
+const getYoutubeTranscriptText = require("../utils/youtube-transcript-extractor.js");
+const summarizeTextWithGemini = require("../ai-models/summarizeTextWithGemini.js");
+const summarizeTextWithLLaMA = require("../ai-models/summarizeTextWithLLaMA.js");
+const summarizeTextWithClaude = require("../ai-models/summarizeTextWithClaude.js");
 
 exports.summarizeVideo = async (req, res) => {
-  const { videoUrl } = req.body;
+  const { videoUrl, model } = req.body;
 
   if (!videoUrl) {
     return res.status(400).json({ error: "Video URL is required" });
@@ -25,19 +28,106 @@ exports.summarizeVideo = async (req, res) => {
   }
 
   try {
-    const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    if (!transcript || transcript.length === 0) {
-      return res
-        .status(201)
-        .json({ error: "No transcript found for this video" });
-    }
-    const fullText = transcript.map((t) => t.text).join(" ");
+    const text = await getYoutubeTranscriptText(videoId, "en");
 
-    const summary = await summarizeTextWithGemini(fullText, "youtube");
+    if (model === "llama") {
+      const summary = await summarizeTextWithLLaMA(text, "youtube");
+    } else if (model === "claude") {
+      const summary = await summarizeTextWithClaude(text, "youtube");
+    } else if (model === "gemini") {
+      const summary = await summarizeTextWithGemini(text, "youtube");
+    } else {
+      return res.status(400).json({ error: "Invalid model" });
+    }
+
     res.status(200).json({ summary });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to summarize video" });
+  }
+};
+
+exports.summarizeNotes = async (req, res) => {
+  const { rawNotes } = req.body;
+  try {
+    if (!rawNotes || rawNotes.trim().length === 0) {
+      return res.status(400).json({ error: "Notes text is required" });
+    }
+    if (model === "llama") {
+      const summary = await summarizeTextWithLLaMA(rawNotes, "notes");
+    } else if (model === "claude") {
+      const summary = await summarizeTextWithClaude(rawNotes, "notes");
+    } else if (model === "gemini") {
+      const summary = await summarizeTextWithGemini(rawNotes, "notes");
+    } else {
+      return res.status(400).json({ error: "Invalid model" });
+    }
+    res.status(200).json({ summary });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to summarize notes" });
+  }
+};
+
+exports.summarizePdf = async (req, res) => {
+  try {
+    // Check file upload
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // Get selected model from request body
+    const model = req.body.model; // e.g., "gemini", "llama", "claude"
+
+    const mime = req.file.mimetype;
+    let extractedText = "";
+    let summary = "";
+
+    // Helper: choose correct summarizer function
+    const summarize = async (text, mode) => {
+      if (model === "claude") {
+        return await summarizeTextWithClaude(text, mode);
+      } else if (model === "llama") {
+        return await summarizeTextWithLLaMA(text, mode);
+      } else {
+        return await summarizeTextWithGemini(text, mode); // default Gemini
+      }
+    };
+
+    // File type handling
+    if (mime === "application/pdf") {
+      extractedText = await extractTextFromPdf(req.file.buffer);
+      summary = await summarize(extractedText, "pdf");
+    } else if (
+      mime ===
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+      mime === "application/vnd.ms-powerpoint"
+    ) {
+      extractedText = await extractTextFromPptx(req.file.buffer);
+      summary = await summarize(extractedText, "pptx");
+    } else if (mime === "text/plain") {
+      extractedText = await extractTextFromTxt(req.file.buffer);
+      summary = await summarize(extractedText, "pdf");
+    } else if (
+      mime ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      extractedText = await extractTextFromDocx(req.file.buffer);
+      summary = await summarize(extractedText, "pdf");
+    } else {
+      return res.status(400).json({ error: "Unsupported file format" });
+    }
+
+    if (!extractedText || extractedText.trim().length === 0) {
+      return res
+        .status(201)
+        .json({ error: "No text extracted from the document" });
+    }
+
+    res.status(200).json({ summary });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to process document" });
   }
 };
 
@@ -58,69 +148,5 @@ exports.downloadPdf = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to generate PDF" });
-  }
-};
-
-exports.summarizeNotes = async (req, res) => {
-  const { rawNotes } = req.body;
-  try {
-    if (!rawNotes || rawNotes.trim().length === 0) {
-      return res.status(400).json({ error: "Notes text is required" });
-    }
-    const summary = await summarizeTextWithGemini(rawNotes, "notes");
-    res.status(200).json({ summary });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to summarize notes" });
-  }
-};
-
-exports.summarizePdf = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-    const mime = req.file.mimetype;
-    let extractedText = "";
-    let summary = ""
-
-    if (mime === "application/pdf") {
-      extractedText = await extractTextFromPdf(req.file.buffer);
-      summary = await summarizeTextWithGemini(extractedText, "pdf");
-    } 
-
-    else if ( mime === "application/vnd.openxmlformats-officedocument.presentationml.presentation") {
-      extractedText = await extractTextFromPptx(req.file.buffer);
-      summary = await summarizeTextWithGemini(extractedText, "pptx");
-    } 
-
-    else if (mime === "application/vnd.ms-powerpoint") {
-      extractedText = await extractTextFromPptx(req.file.buffer);
-      summary = await summarizeTextWithGemini(extractedText, "pptx");
-    } 
-
-    else if (mime === "text/plain") {
-      extractedText = await extractTextFromTxt(req.file.buffer);
-      summary = await summarizeTextWithGemini(extractedText, "pdf");
-    } 
-
-    else if ( mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-      extractedText = await extractTextFromDocx(req.file.buffer);
-    } 
-
-    else {
-      return res.status(400).json({ error: "Unsupported file format" });
-    }
-    
-    if (!extractedText || extractedText.trim().length === 0) {
-      return res
-        .status(201)
-        .json({ error: "No text extracted from the document" });
-    }
-
-    res.status(200).json({ summary });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to process document" });
   }
 };

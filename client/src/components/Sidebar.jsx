@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/UserContext";
+import { FileText, History, Menu, X } from "lucide-react";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,33 +73,35 @@ export default function Sidebar() {
       <button
         ref={toggleButtonRef}
         onClick={toggleSidebar}
-        className="fixed bottom-4 left-2 z-50 p-2 text-white rounded-full hover:bg-gray-700/50 transition-colors duration-200"
+        className="fixed bottom-6 left-6 z-50 p-3 bg-amber-600 text-white rounded-full shadow-lg hover:bg-amber-700 transition-all duration-200"
         aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
       >
         {isOpen ? (
-          <span className="text-xl">✖</span>
+          <X className="w-5 h-5" />
         ) : (
-          <span className="text-xl">☰</span>
+          <Menu className="w-5 h-5" />
         )}
       </button>
-
+  
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-64 bg-zinc-800/50 backdrop-blur-lg text-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-white/90 backdrop-blur-lg border-r border-amber-200/50 shadow-xl transform transition-all duration-300 ease-in-out z-40 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-lg text-center font-semibold text-gray-100">
+        <div className="p-5 border-b border-amber-200/50">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <History className="w-5 h-5 text-amber-600" />
             History
           </h2>
         </div>
-
-        <div className="p-4">
+  
+        <div className="p-4 overflow-y-auto h-[calc(100%-60px)]">
           {loading ? (
-            <div className="flex justify-center items-center h-20">
-              <span className="text-gray-400 animate-pulse">Loading...</span>
+            <div className="flex flex-col items-center justify-center h-32">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+              <span className="mt-3 text-amber-800/70">Loading notes...</span>
             </div>
           ) : (
             <ul className="space-y-2">
@@ -107,23 +110,20 @@ export default function Sidebar() {
                   <li
                     key={note._id}
                     onClick={() => handleOpenChat(note._id)}
-                    className="group flex justify-between items-center p-2 rounded-md hover:bg-gray-700/30 transition-colors duration-150 cursor-pointer"
+                    className="flex justify-between items-center p-3 rounded-lg hover:bg-amber-100/50 transition-colors duration-150 cursor-pointer"
                   >
-                    <span className="text-gray-200 text-sm truncate max-w-[70%] group-hover:text-blue-400 transition-colors">
-                      {
-                        note.title.split(
-                          new Date(note.createdAt).toLocaleString()
-                        )[0]
-                      }
+                    <span className="text-gray-900 text-sm font-medium truncate max-w-[70%] hover:text-amber-600 transition-colors">
+                      {note.title.split(new Date(note.createdAt).toLocaleString())[0]}
                     </span>
-                    <span className="text-gray-500 text-xs whitespace-nowrap">
+                    <span className="text-amber-800/60 text-xs whitespace-nowrap">
                       {new Date(note.createdAt).toLocaleString().split(",")[0]}
                     </span>
                   </li>
                 ))
               ) : (
-                <div className="flex justify-center items-center h-20">
-                  <span className="text-gray-500">Nothing to show</span>
+                <div className="flex flex-col items-center justify-center h-32 text-amber-800/60">
+                  <FileText className="w-8 h-8 mb-2" />
+                  <span>No notes yet</span>
                 </div>
               )}
             </ul>

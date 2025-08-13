@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowBigLeft, ArrowBigRight, Trash2Icon } from "lucide-react";
+import { ArrowBigLeft, ArrowBigRight, Download, Trash2Icon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Sidebar from "../components/Sidebar";
@@ -79,44 +79,55 @@ export default function Dashboard() {
     fetchNotes();
   }, []);
 
-  useEffect(() => {}, [notes]);
+  useEffect(() => { }, [notes]);
 
   return (
-    <>
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-gray-900 via-black to-gray-800 backdrop-blur-sm" />
+    <div className="min-h-screen relative bg-gradient-to-br from-amber-50 to-amber-100 px-6 py-12">
+      {/* Background pattern */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(17,24,39,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,24,39,0.08) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          opacity: 0.15
+        }}
+      />
+
+      {/* Back Button */}
       <Link
         to="/profile"
-        className="px-4 py-2 flex gap-2 absolute top-4 left-4 rounded-md text-white bg-black hover:bg-gray-800"
+        className="absolute top-6 left-6 px-4 py-2 flex items-center gap-2 text-amber-900 hover:text-amber-700 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition"
       >
-        <ArrowBigLeft />
+        <ArrowBigLeft className="w-5 h-5" />
         Back
       </Link>
-      <Sidebar />
 
-      {/* Filters and search bar */}
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto">
+        {/* Search Bar */}
+        <div className="mb-16">
+          <SearchBar notes={notes} setNotes={setNotes} fetchNotes={fetchNotes} />
+        </div>
 
-      <div className="p-10 max-w-6xl mx-auto">
-        <SearchBar notes={notes} setNotes={setNotes} fetchNotes={fetchNotes} />
-      </div>
-      <div className="p-10 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-white">📋 Your Notes</h2>
+        <h2 className="text-3xl font-bold mb-8 text-gray-900">📋 Your Notes</h2>
+
         {loading ? (
-          <p className="text-white text-lg">Loading...</p>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+          </div>
         ) : notes.length === 0 ? (
-          <p className="text-white text-lg">No saved notes yet.</p>
+          <p className="text-amber-800/70">No saved notes yet.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {notes.map((note) => (
               <div
                 key={note._id}
-                className="bg-white/10 flex flex-col gap-2 justify-between backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg p-6 text-white transition-transform duration-300 hover:translate-y-3 hover:scale-[0.98] hover:shadow-2xl"
-                style={{
-                  transformStyle: "preserve-3d",
-                  willChange: "transform",
-                }}
+                className="bg-white/80 backdrop-blur-sm border border-amber-200/50 rounded-xl p-5 shadow-md hover:shadow-lg transition-all hover:-translate-y-1"
               >
-                <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-semibold mb-3">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {note.title.replace(
                       new Date(note.createdAt).toLocaleString(),
                       ""
@@ -124,35 +135,32 @@ export default function Dashboard() {
                   </h3>
                   <button
                     onClick={() => deleteNote(note._id)}
-                    className="text-red-500 rounded-md"
+                    className="text-red-500 hover:text-red-600 transition"
                   >
-                    <Trash2Icon size={20} />
+                    <Trash2Icon size={18} />
                   </button>
                 </div>
-                {/*Small mark down text */}
-                <div className="prose max-w-1/4 max-h-60 prose-slate prose-sm dark:prose-invert">
+
+                <div className="prose prose-sm max-w-none text-gray-700 mb-5 max-h-40 overflow-hidden">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {note.content.slice(0, 100)}
                   </ReactMarkdown>
                 </div>
 
-                {/* <p className="text-sm text-gray-200 whitespace-pre-wrap mb-5">
-                  {note.content.slice(0, 300)}...
-                </p> */}
                 <div className="flex gap-3">
                   <button
-                    className="flex items-center justify-center w-1/2 gap-2 bg-emerald-500 hover:bg-emerald-600 px-2 py-2 rounded-lg text-sm font-medium transition"
+                    className="flex-1 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition flex items-center justify-center gap-2 text-sm"
                     onClick={() => downloadNote(note._id, note.title)}
                   >
-                    <ArrowDownTrayIcon className="h-5 w-5" />
+                    <Download size={16} />
                     Download
                   </button>
                   <button
-                    className="flex items-center justify-center w-1/2 gap-2 bg-rose-500 hover:bg-rose-600 px-2 py-2 rounded-lg text-sm font-medium transition"
+                    className="flex-1 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition flex items-center justify-center gap-2 text-sm"
                     onClick={() => navigate(`/chat/${note._id}`)}
                   >
-                    <ArrowBigRight />
-                    View More
+                    <ArrowBigRight size={16} />
+                    View
                   </button>
                 </div>
               </div>
@@ -160,6 +168,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { ChevronDownIcon, SearchIcon } from "lucide-react";
+import { ChevronDown, ChevronDownIcon, Search, SearchIcon, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 export default function SearchBar({ notes, setNotes }) {
@@ -48,39 +48,40 @@ export default function SearchBar({ notes, setNotes }) {
     };
 
     return (
-        <div className="top-6 absolute flex justify-between items-center w-2/3 bg-white/5 backdrop-blur-md rounded-xl p-1 mx-auto shadow-lg border border-white/10">
-            {/* Search input with glassmorphism effect */}
-            <div className="flex flex-1 items-center gap-2 rounded-xl py-1 px-3 bg-white/5 focus-within:ring-2 focus-within:ring-blue-400/30 transition-all">
-                <SearchIcon className="w-5 h-5 text-white/60" />
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={search}
-                    onChange={handleSearch}
-                    className="w-full bg-transparent text-white placeholder-white/60 outline-none text-sm py-2"
-                />
-            </div>
-
-            {/* Sort dropdown with modern styling */}
-            <div className="flex items-center mx-2 relative">
-                <select
-                    value={sort}
-                    onChange={handleSort}
-                    className="appearance-none bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 pr-8 text-sm cursor-pointer outline-none hover:bg-white/15 transition-colors"
-                >
-                    <option className="bg-gray-800 text-white" value="latest">Latest</option>
-                    <option className="bg-gray-800 text-white" value="oldest">Oldest</option>
-                </select>
-                <ChevronDownIcon className="w-4 h-4 text-white/60 absolute right-3 pointer-events-none" />
-            </div>
-
-            {/* Clear button with smooth hover effect */}
-            <button
-                onClick={handleClearFilters}
-                className="bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 text-sm py-2 rounded-lg hover:from-red-600 hover:to-rose-700 transition-all shadow-md hover:shadow-red-500/20 active:scale-95"
+        <div className="top-6 absolute flex justify-between items-center w-2/3 bg-white/90 backdrop-blur-sm rounded-xl p-1.5 mx-auto shadow-md border border-amber-200/50">
+          {/* Search input */}
+          <div className="flex flex-1 items-center gap-2 rounded-lg py-1 px-3 bg-white focus-within:ring-2 focus-within:ring-amber-300/50 transition-all">
+            <Search className="w-5 h-5 text-amber-800/60" />
+            <input
+              type="text"
+              placeholder="Search notes..."
+              value={search}
+              onChange={handleSearch}
+              className="w-full bg-transparent text-gray-900 placeholder-amber-800/40 outline-none text-sm py-1.5"
+            />
+          </div>
+      
+          {/* Sort dropdown */}
+          <div className="flex items-center mx-2 relative">
+            <select
+              value={sort}
+              onChange={handleSort}
+              className="appearance-none bg-white border border-amber-200 text-gray-900 rounded-lg px-3 py-1.5 pr-7 text-sm cursor-pointer outline-none hover:border-amber-300 transition-colors"
             >
-                Clear Filters
-            </button>
+              <option value="latest">Latest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+            <ChevronDown className="w-4 h-4 text-amber-800/60 absolute right-2 pointer-events-none" />
+          </div>
+      
+          {/* Clear button */}
+          <button
+            onClick={handleClearFilters}
+            className="bg-amber-600 text-white px-4 text-sm py-1.5 rounded-lg hover:bg-amber-700 transition-all shadow-sm hover:shadow-md active:scale-95 flex items-center gap-1"
+          >
+            <X className="w-4 h-4" />
+            Clear
+          </button>
         </div>
-    )
+      );
 }

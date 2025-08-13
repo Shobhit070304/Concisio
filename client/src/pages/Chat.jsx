@@ -77,54 +77,68 @@ function Chat() {
 
   if (!note) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
+      <div className="min-h-screen flex items-center justify-center text-amber-800/70">
         No chat to display.
       </div>
     );
   }
-
+  
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10">
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-2xl" />
+    <div className="min-h-screen flex flex-col items-center justify-center relative bg-gradient-to-br from-amber-50 to-amber-100 px-6 py-12">
+      {/* Background pattern */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(17,24,39,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,24,39,0.08) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          opacity: 0.15
+        }}
+      />
+      
+      {/* Back Button */}
       <Link
         to="/home"
-        className="px-4 py-2 flex gap-2 absolute top-4 left-4 rounded-md text-white bg-black hover:bg-gray-800"
+        className="absolute top-6 left-6 px-4 py-2 flex items-center gap-2 text-amber-900 hover:text-amber-700 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition"
       >
-        <ArrowBigLeft />
+        <ArrowBigLeft className="w-5 h-5" />
         Back
       </Link>
-      <Sidebar />
-      <div className="flex justify-between items-center w-1/2 mb-4">
-        <h1 className="text-4xl underline text-white font-bold mb-3">
-          {note.title.replace(new Date(note.createdAt).toLocaleString(), "")}
-        </h1>
+  
+      {/* Note Content */}
+      <div className="w-full max-w-4xl">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {note.title.replace(new Date(note.createdAt).toLocaleString(), "")}
+          </h1>
+          <button
+            onClick={handleCopy}
+            className="px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition flex items-center gap-2"
+          >
+            <Copy size={16} /> Copy
+          </button>
+        </div>
+        
+        <div className="bg-white/80 backdrop-blur-sm border border-amber-200/50 rounded-xl p-6 shadow-md hover:shadow-lg transition-all">
+          <div className="prose max-w-none text-gray-700">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {note.content}
+            </ReactMarkdown>
+          </div>
+          <p className="text-sm text-amber-800/70 mt-6">
+            Created At: {new Date(note.createdAt).toLocaleString()}
+          </p>
+        </div>
+  
         <button
-          onClick={handleCopy}
-          className="text-white-500 px-4 py-2 rounded-md bg-green-500 hover:bg-green-600"
+          onClick={handleDownloadFile}
+          disabled={downloading}
+          className="mt-6 px-5 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition flex items-center gap-2 mx-auto"
         >
-          <span className="flex items-center gap-2">
-            {" "}
-            <Copy /> Copy
-          </span>
+          {downloading ? "Downloading..." : "Download PDF"}
         </button>
       </div>
-      <div className="w-1/2 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 text-white shadow-lg">
-        <div className="prose prose-slate prose-sm max-w-none dark:prose-invert">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {note.content}
-          </ReactMarkdown>
-        </div>
-        <p className="text-sm text-blue-500 mt-8">
-          Created At: {new Date(note.createdAt).toLocaleString()}
-        </p>
-      </div>
-      <button
-        onClick={handleDownloadFile}
-        className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-        disabled={downloading}
-      >
-        {downloading ? "Downloading..." : "Download PDF"}
-      </button>
     </div>
   );
 }

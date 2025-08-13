@@ -54,7 +54,7 @@ const UpdateProfile = () => {
 
       if (res.status === 200) {
         navigate("/profile");
-         update(res.data);
+        update(res.data);
       }
 
       setFormData({
@@ -69,25 +69,39 @@ const UpdateProfile = () => {
   };
 
   return (
-    <div className="relative z-10 w-full flex items-center justify-center min-h-screen">
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-gray-900 bg-opacity-80 backdrop-blur-xl" />
+    <div className="min-h-screen flex items-center justify-center relative bg-gradient-to-br from-amber-50 to-amber-100 px-6">
+      {/* Background pattern */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(17,24,39,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,24,39,0.08) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          opacity: 0.15
+        }}
+      />
+
+      {/* Back Button */}
       <Link
         to="/profile"
-        className="px-4 py-2 flex gap-2 absolute top-4 left-4 rounded-md text-white bg-black hover:bg-gray-800"
+        className="absolute top-6 left-6 px-4 py-2 flex items-center gap-2 text-amber-900 hover:text-amber-700 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition"
       >
-        <ArrowBigLeft />
+        <ArrowBigLeft className="w-5 h-5" />
         Back
       </Link>
-      <div className="bg-white/10 p-8 rounded-lg backdrop-blur-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-white mb-6">
-          Update profile
+
+      {/* Update Form */}
+      <div className="p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
+          Update Profile
         </h2>
         {message && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-400 text-red-600 text-sm">
             {message}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2">
           <div>
             <input
               type="text"
@@ -95,11 +109,10 @@ const UpdateProfile = () => {
               placeholder="Name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/20"
+              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
               required
             />
           </div>
-
           <div>
             <input
               type="password"
@@ -107,7 +120,7 @@ const UpdateProfile = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/20"
+              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
               required
             />
           </div>
@@ -118,13 +131,13 @@ const UpdateProfile = () => {
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/20"
+              className="w-full mb-4 bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-100 transition-all"
+            className="w-full py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-sm hover:shadow-md"
           >
             Update
           </button>
