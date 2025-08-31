@@ -5,8 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowBigLeft, ArrowBigRight, Download, Trash2Icon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import Sidebar from "../components/Sidebar";
-import SearchBar from "../components/SearchBar";
+import SearchBar from "../../components/ui/SearchBar";
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);

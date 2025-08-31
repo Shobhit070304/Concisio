@@ -1,6 +1,6 @@
 import React from "react";
 import { useContext } from "react";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 import { Link } from "react-router-dom";
 import { ArrowBigLeft } from "lucide-react";
 

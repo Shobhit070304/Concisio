@@ -5,6 +5,7 @@ const connectDB = require("./db/db");
 const authRoutes = require("./routes/user-routes");
 const summarizeRoutes = require("./routes/summarizer-routes");
 const noteRoutes = require("./routes/notes-routes");
+const chatRoutes = require("./routes/chat-routes");
 
 dotenv.config();
 connectDB();
@@ -28,5 +29,6 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/summarize", summarizeRoutes);
 app.use("/api/note", noteRoutes);
+app.use("/api/chat", chatRoutes);
 
 module.exports = app;

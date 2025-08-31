@@ -1,45 +1,34 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader, Loader2, Loader2Icon, LoaderIcon } from "lucide-react";
+import { AuthContext } from "../../context/UserContext";
 import axios from "axios";
-import { AuthContext } from "../context/UserContext";
 
-const Signup = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [loading, setLoading] = useState(false);
+const Login = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSignup = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/auth/register`,
+        `${import.meta.env.VITE_BASE_URL}/auth/login`,
         form
       );
       login(res.data);
       navigate("/home");
     } catch (err) {
-      setError("Failed to create account");
+      setError("Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -58,7 +47,7 @@ const Signup = () => {
           opacity: 0.15
         }}
       />
-      
+
       {/* Back Button */}
       <div className="absolute top-6 left-6">
         <button
@@ -69,32 +58,21 @@ const Signup = () => {
           Back
         </button>
       </div>
-  
-      {/* Signup Content */}
+
+      {/* Login Content */}
       <div className="w-full max-w-sm px-4">
         <div className="text-center mb-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Create an Account</h2>
-          <p className="text-amber-800/70">Join us today, it's quick & easy</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+          <p className="text-amber-800/70">Sign in to continue</p>
         </div>
-  
+
         {error && (
           <div className="mb-6 p-3 bg-red-50 border-l-4 border-red-400 text-red-600 text-sm">
             {error}
           </div>
         )}
-  
-        <form onSubmit={handleSignup} className="space-y-2">
-          <div className="relative">
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={form.name}
-              onChange={handleChange}
-              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
-              required
-            />
-          </div>
+
+        <form onSubmit={handleLogin} className="space-y-4">
           <div className="relative">
             <input
               type="email"
@@ -117,18 +95,7 @@ const Signup = () => {
               required
             />
           </div>
-          <div className="relative">
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
-              required
-            />
-          </div>
-  
+
           <div>
           <button
             type="submit"
@@ -137,25 +104,26 @@ const Signup = () => {
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="animate-spin w-4 h-4" />
-                Creating account...
+                Logging in...
               </span>
             ) : (
-              "Sign Up"
+              "Login"
             )}
           </button>
           </div>
         </form>
-  
+
         <p className="mt-4 text-center text-amber-800/70 text-sm">
-          Already have an account?{" "}
-          <Link to="/login" className="text-amber-900 font-medium hover:underline">
-            Login
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-amber-900 font-medium hover:underline">
+            Sign up
           </Link>
         </p>
       </div>
     </div>
   );
 
+
 };
 
-export default Signup;
+export default Login;

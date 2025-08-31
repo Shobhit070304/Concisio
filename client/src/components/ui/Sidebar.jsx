@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 import { FileText, History, Menu, X } from "lucide-react";
 
 export default function Sidebar() {

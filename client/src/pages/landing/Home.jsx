@@ -1,10 +1,10 @@
 import React, { useContext, useRef, useState } from "react";
 import axios from "axios";
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
+import Header from "../../components/layout/Header";
+import Sidebar from "../../components/ui/Sidebar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { AuthContext } from "../context/UserContext";
+import { AuthContext } from "../../context/UserContext";
 import { toast } from "react-toastify";
 import {
   ArrowRight,

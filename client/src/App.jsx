@@ -1,18 +1,19 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup.jsx";
-import NotFound from "./pages/NotFound.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import Home from "./pages/Home.jsx";
-import Profile from "./pages/Profile.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import UpdateProfile from "./pages/UpdateProfile.jsx";
-import Chat from "./pages/Chat.jsx";
+import Login from "./pages/auth/Login.jsx";
+import Signup from "./pages/auth/Signup.jsx";
+import NotFound from "./pages/error/NotFound.jsx";
+import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
+import Home from "./pages/landing/Home.jsx";
+import Profile from "./pages/profile/Profile.jsx";
+import Dashboard from "./pages/dashboard/Dashboard.jsx";
+import UpdateProfile from "./pages/profile/UpdateProfile.jsx";
+import Chat from "./pages/chat/Chat.jsx";
 import { ToastContainer } from "react-toastify";
-import LandingPage from "./pages/LandingPage.jsx";
-import Header from "./components/Header.jsx";
-import Footer from "./components/Footer.jsx";
+import LandingPage from "./pages/landing/LandingPage.jsx";
+import Header from "./components/layout/Header.jsx";
+import Footer from "./components/layout/Footer.jsx";
+import ChatWithNotes from "./pages/chat/ChatWithNotes.jsx";
 
 function App() {
   const location = useLocation();
@@ -60,7 +61,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route path="/chatWithNotes/:id" element={<ChatWithNotes />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!hideLayout && <Footer />}
