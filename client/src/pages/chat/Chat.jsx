@@ -179,6 +179,7 @@ function Chat() {
               {/* Chat Body */}
               <div className="flex-1 overflow-y-auto p-3">
                 <ChatWithNotesPage note={note} />
+
               </div>
             </div>
           )}
