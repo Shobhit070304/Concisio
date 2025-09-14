@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronDownIcon, Search, SearchIcon, X } from "lucide-react";
+import { ChevronDown, Search, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 export default function SearchBar({ notes, setNotes }) {

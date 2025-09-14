@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowBigLeft, ArrowBigRight, Download, Trash2Icon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import SearchBar from "../../components/ui/SearchBar";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
@@ -78,7 +78,6 @@ export default function Dashboard() {
     fetchNotes();
   }, []);
 
-  useEffect(() => { }, [notes]);
 
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-amber-50 to-amber-100 px-6 py-12">

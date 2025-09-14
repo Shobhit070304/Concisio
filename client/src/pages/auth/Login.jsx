@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Loader, Loader2, Loader2Icon, LoaderIcon } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { AuthContext } from "../../context/UserContext";
 import axios from "axios";
 

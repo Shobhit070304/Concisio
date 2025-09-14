@@ -1,9 +1,6 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Github, FileText, Share2, Zap, BookOpen, Clock, Star, Linkedin, Eye, ChevronDown, ArrowRight, Shield, LayoutDashboard, Download, Video } from "lucide-react";
-import { AuthContext } from "../../context/UserContext";
-import Header from "../../components/layout/Header";
-import Footer from "../../components/layout/Footer";
 
 const LandingPage = () => {
   const carouselItems = [

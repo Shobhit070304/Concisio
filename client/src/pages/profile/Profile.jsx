@@ -1,5 +1,4 @@
-import React from "react";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "../../context/UserContext";
 import { Link } from "react-router-dom";
 import { ArrowBigLeft } from "lucide-react";
@@ -7,7 +6,6 @@ import { ArrowBigLeft } from "lucide-react";
 const ProfilePage = () => {
   const { user, logout } = useContext(AuthContext);
 
-  console.log(user);
 
   // Create a random avatar URL using DiceBear
   const randomSeed = user.name + Math.floor(Math.random() * 10000);
