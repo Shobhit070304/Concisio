@@ -20,19 +20,23 @@ function Chat() {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/note/${id}`,
+          `${import.meta.env.VITE_BASE_URL}/note/${noteId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-
-        setNote(res.data);
+        if (res.data.success) {
+          setNote(res.data.data.note);
+        } else {
+          alert(res.data.message || "Failed to fetch note");
+        }
       } catch (err) {
-        alert("Failed to fetch notes");
+        alert("Failed to fetch note");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchNote();

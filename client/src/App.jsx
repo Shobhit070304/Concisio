@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toastConfig } from "./components/ui/Toast.jsx";
 import Header from "./components/layout/Header.jsx";
 import Footer from "./components/layout/Footer.jsx";
 import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
@@ -23,7 +25,18 @@ function App() {
   const hideLayout = ["login", "signup"].includes(pathname);
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position={toastConfig.position}
+        autoClose={toastConfig.autoClose}
+        hideProgressBar={toastConfig.hideProgressBar}
+        newestOnTop={toastConfig.newestOnTop}
+        closeOnClick={toastConfig.closeOnClick}
+        rtl={toastConfig.rtl}
+        pauseOnFocusLoss={toastConfig.pauseOnFocusLoss}
+        draggable={toastConfig.draggable}
+        pauseOnHover={toastConfig.pauseOnHover}
+        className="z-50"
+      />
 
       {!hideLayout && <Header />}
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>

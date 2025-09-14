@@ -11,10 +11,18 @@ const UserContext = ({ children }) => {
 
   const navigate = useNavigate();
 
-  const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData.user));
-    localStorage.setItem("token", userData.token);
-    setUser(userData);
+  const login = async (userData) => {
+    if (userData.data) {
+      // Handle response with data property (standard API response)
+      localStorage.setItem("user", JSON.stringify(userData.data.user));
+      localStorage.setItem("token", userData.data.token);
+      setUser(userData.data);
+    } else {
+      // Handle direct user and token values
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("token", arguments[1]);
+      setUser({ user: userData, token: arguments[1] });
+    }
   };
 
   const update = (userData) => {

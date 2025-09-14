@@ -202,36 +202,28 @@ const Home = () => {
     setDownloading(false);
   };
 
-  const handleSaveToDashboard = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.info("Please login to save your note");
-      return;
-    }
-    let date = new Date().toLocaleString();
+  const handleSaveNote = async () => {
+    setLoading(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/note/save`,
-        {
-          title: title.trim() + " " + date || "Auto Summary - " + date,
-          content: summary.trim(),
-        },
+        `${import.meta.env.VITE_BASE_URL}/note/create`,
+        { title },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (res.status === 200) {
+      if (res.data.success) {
         toast.success("Note saved successfully!");
         setTitle("");
+      } else {
+        toast.error(res.data.message || "Failed to save note");
       }
     } catch (err) {
       toast.error("Failed to save note");
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
@@ -304,7 +296,7 @@ const Home = () => {
 
         {/* Notes Input */}
         {mode === "notes" && (
-          <div className="bg-amber-50/80 border border-amber-200 rounded-lg w-full max-w-2xl mt-8 shadow-sm hover:shadow transition">
+          <div className="bg-amber-50/80 border border-amber-200 rounded-lg w-full max-w-2xl mt-8 shadow-sm hover:shadow transition mx-4">
             <textarea
               rows="4"
               value={notes}
@@ -312,11 +304,11 @@ const Home = () => {
               placeholder="Paste your notes here..."
               className="w-full px-4 py-4 bg-white/70 text-gray-900 text-sm placeholder-amber-800/50 outline-none border-b border-amber-100 resize-none focus:border-amber-300"
             />
-            <div className="flex justify-end p-4">
+            <div className="flex flex-col sm:flex-row justify-end p-4 gap-2">
               <button
                 onClick={handleSummarizeNotes}
                 disabled={loading}
-                className="bg-amber-600 text-white text-sm px-5 py-2 rounded-md hover:bg-amber-700 transition"
+                className="bg-amber-600 text-white text-sm px-5 py-2 rounded-md hover:bg-amber-700 transition w-full sm:w-auto"
               >
                 {loading ? "Processing..." : "Upload & Summarize"}
               </button>
@@ -326,15 +318,15 @@ const Home = () => {
 
         {/* File Upload */}
         {mode === "file" && (
-          <div className="bg-amber-50/80 border border-dashed border-amber-300 rounded-lg w-full max-w-2xl mt-8 p-8 text-center shadow-sm hover:border-amber-400 transition">
+          <div className="bg-amber-50/80 border border-dashed border-amber-300 rounded-lg w-full max-w-2xl mt-8 p-4 sm:p-8 text-center shadow-sm hover:border-amber-400 transition mx-4">
             <label
               htmlFor="file-upload"
               className="flex flex-col items-center justify-center gap-2 cursor-pointer"
             >
-              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-amber-200">
-                <Upload className="text-amber-600" size={20} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white border border-amber-200">
+                <Upload className="text-amber-600" size={18} />
               </div>
-              <p className="text-sm text-amber-900">
+              <p className="text-xs sm:text-sm text-amber-900">
                 Click to upload{" "}
                 <span className="text-amber-800/60">or drag & drop</span>
               </p>
@@ -352,7 +344,7 @@ const Home = () => {
 
             {/* File Name Display */}
             {file && (
-              <p className="mt-4 text-sm text-amber-900 truncate max-w-full">
+              <p className="mt-4 text-xs sm:text-sm text-amber-900 truncate max-w-full">
                 📄 {file.name}
               </p>
             )}
@@ -361,7 +353,7 @@ const Home = () => {
               <button
                 onClick={handleSummarizeFile}
                 disabled={loading}
-                className="bg-amber-600 text-white text-sm px-5 py-2 rounded-md hover:bg-amber-700 transition"
+                className="bg-amber-600 text-white text-xs sm:text-sm px-4 sm:px-5 py-2 rounded-md hover:bg-amber-700 transition w-full sm:w-auto max-w-xs"
               >
                 {loading ? "Processing..." : "Upload & Summarize"}
               </button>
@@ -370,14 +362,14 @@ const Home = () => {
         )}
 
         {/* Model Selector */}
-        <div className="mt-6 w-full max-w-2xl">
-          <label className="block mb-2 font-medium text-gray-700">
+        <div className="mt-6 w-full max-w-2xl px-4">
+          <label className="block mb-2 text-sm sm:text-base font-medium text-gray-700">
             Select AI Model
           </label>
           <select
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            className="w-full px-3 py-2 text-sm bg-white/70 border border-amber-200 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 transition"
+            className="w-full px-3 py-2 text-xs sm:text-sm bg-white/70 border border-amber-200 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 transition"
           >
             <option value="gemini">Gemini Pro (Reasoning)</option>
             <option value="llama">LLaMA 3 (Fast)</option>
@@ -386,12 +378,12 @@ const Home = () => {
         </div>
 
         {/* Mode Selector */}
-        <div className="mt-6 flex justify-center gap-2">
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
           {["youtube", "notes", "file"].map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`px-4 py-2 text-sm rounded-md border transition ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-md border transition ${
                 mode === m
                   ? "bg-amber-600 text-white border-amber-600"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
@@ -410,12 +402,12 @@ const Home = () => {
         )}
 
         {/* Suggestions */}
-        <div className="mt-10 flex flex-wrap justify-center gap-2 w-full max-w-4xl">
+        <div className="mt-10 flex flex-wrap justify-center gap-2 w-full max-w-4xl px-4">
           {suggestions.map((item, index) => (
             <div
               key={index}
               onClick={() => handleSuggestionClick(item.url)}
-              className="cursor-pointer bg-white border border-gray-200 rounded-md px-3 py-2 hover:border-amber-300 hover:shadow-sm transition"
+              className="cursor-pointer bg-white border border-gray-200 rounded-md px-2 sm:px-3 py-1 sm:py-2 hover:border-amber-300 hover:shadow-sm transition"
             >
               <p className="text-xs text-gray-700">{item.topic}</p>
             </div>
@@ -424,26 +416,26 @@ const Home = () => {
 
         {/* Summary */}
         {summary && (
-          <div className="mt-12 w-full max-w-4xl bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow transition">
-            <h2 className="text-lg font-semibold mb-3 text-gray-900">
+          <div className="mt-12 w-full max-w-4xl bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm hover:shadow transition mx-4">
+            <h2 className="text-base sm:text-lg font-semibold mb-3 text-gray-900">
               📝 Summary
             </h2>
-            <div className="prose prose-sm text-gray-700">
+            <div className="prose prose-sm text-gray-700 text-xs sm:text-sm">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {summary}
               </ReactMarkdown>
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-col sm:flex-row gap-2 mt-4">
               <button
                 onClick={handleDownloadFile}
                 disabled={downloading}
-                className="bg-amber-600 text-white text-sm px-4 py-2 rounded-md hover:bg-amber-400 transition"
+                className="bg-amber-600 text-white text-xs sm:text-sm px-4 py-2 rounded-md hover:bg-amber-400 transition w-full sm:w-auto"
               >
                 {downloading ? "Downloading..." : "Download PDF"}
               </button>
               <button
                 onClick={handleCopy}
-                className="bg-amber-400 border border-amber-600 text-sm px-4 py-2 rounded-md hover:bg-amber-500 transition"
+                className="bg-amber-400 border border-amber-600 text-xs sm:text-sm px-4 py-2 rounded-md hover:bg-amber-500 transition w-full sm:w-auto"
               >
                 Copy Summary
               </button>
@@ -453,8 +445,8 @@ const Home = () => {
 
         {/* Save to Dashboard */}
         {summary && (
-          <div className="mt-8 w-full max-w-md bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow transition">
-            <h2 className="text-base font-semibold mb-3 text-gray-900">
+          <div className="mt-8 w-full max-w-md bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm hover:shadow transition mx-4">
+            <h2 className="text-sm sm:text-base font-semibold mb-3 text-gray-900">
               Save to Dashboard
             </h2>
             <form onSubmit={handleSaveToDashboard} className="space-y-4">
@@ -472,13 +464,13 @@ const Home = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   required
                   placeholder="Give your summary a title"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-amber-300 focus:outline-none"
+                  className="w-full px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-amber-300 focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-amber-600 text-white text-sm px-4 py-2 rounded-md hover:bg-amber-700 transition"
+                className="w-full bg-amber-600 text-white text-xs sm:text-sm px-4 py-2 rounded-md hover:bg-amber-700 transition"
               >
                 {saving ? "Saving..." : "Save"}
               </button>

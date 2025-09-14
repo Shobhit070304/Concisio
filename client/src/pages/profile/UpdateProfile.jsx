@@ -15,6 +15,7 @@ const UpdateProfile = () => {
   const { update } = useContext(AuthContext);
 
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,52 +25,36 @@ const UpdateProfile = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    const token = localStorage.getItem("token");
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    const { name, password, confirmPassword } = formData;
-
-    if (!name || !password || !confirmPassword) {
-      setMessage("Please fill all fields.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setMessage("Passwords do not match.");
-      return;
-    }
+    setMessage("");
+    setLoading(true);
 
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/auth/update`,
-        {
-          formData,
-        },
+        { formData },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      if (res.status === 200) {
+      if (res.data.success) {
+        update(res.data.data);
         navigate("/profile");
-        update(res.data);
+      } else {
+        setMessage(res.data.message || "Update failed");
       }
-
-      setFormData({
-        name: "",
-        password: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
-      console.error("Error updating profile : ", error);
-      setMessage("Something went wrong");
+    } catch (err) {
+      setMessage("Update failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-gradient-to-br from-amber-50 to-amber-100 px-6">
+    <div className="min-h-screen flex items-center justify-center relative bg-gradient-to-br from-amber-50 to-amber-100 px-4 sm:px-6">
       {/* Background pattern */}
       <div
         aria-hidden
@@ -85,23 +70,23 @@ const UpdateProfile = () => {
       {/* Back Button */}
       <Link
         to="/profile"
-        className="absolute top-6 left-6 px-4 py-2 flex items-center gap-2 text-amber-900 hover:text-amber-700 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition"
+        className="absolute top-4 sm:top-6 left-4 sm:left-6 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1 sm:gap-2 text-amber-900 hover:text-amber-700 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md transition text-sm sm:text-base z-10"
       >
-        <ArrowBigLeft className="w-5 h-5" />
-        Back
+        <ArrowBigLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span className="hidden sm:inline">Back</span>
       </Link>
 
       {/* Update Form */}
-      <div className="p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
+      <div className="p-4 sm:p-8 w-full max-w-md">
+        <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-4">
           Update Profile
         </h2>
         {message && (
-          <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-400 text-red-600 text-sm">
+          <div className="mb-4 p-2 sm:p-3 bg-red-50 border-l-4 border-red-400 text-red-600 text-xs sm:text-sm">
             {message}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-2">
+        <form onSubmit={handleUpdate} className="space-y-2">
           <div>
             <input
               type="text"
@@ -109,7 +94,7 @@ const UpdateProfile = () => {
               placeholder="Name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
+              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-2 sm:py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors text-sm sm:text-base"
               required
             />
           </div>
@@ -120,7 +105,7 @@ const UpdateProfile = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
+              className="w-full bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-2 sm:py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors text-sm sm:text-base"
               required
             />
           </div>
@@ -131,15 +116,15 @@ const UpdateProfile = () => {
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full mb-4 bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors"
+              className="w-full mb-4 bg-transparent border-b border-amber-300 focus:border-amber-500 px-1 py-2 sm:py-3 focus:outline-none placeholder-amber-800/40 text-gray-900 transition-colors text-sm sm:text-base"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-sm hover:shadow-md"
+            className="w-full py-2 sm:py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-sm hover:shadow-md text-xs sm:text-sm"
           >
-            Update
+            {loading ? "Updating..." : "Update"}
           </button>
         </form>
       </div>
