@@ -43,68 +43,86 @@ const markdownpdf = require("markdown-pdf");
 const fs = require("fs-extra");
 const path = require("path");
 const os = require("os");
-const cssPath = path.resolve(__dirname, "../styles/pdf-style.css");
-const css = fs.readFileSync(cssPath, "utf-8");
 
 const generatePdfBuffer = async (markdownText) => {
-  const tempDir = os.tmpdir(); // Get temp folder
-  const inputPath = path.join(tempDir, `input-${Date.now()}.md`);
-  const outputPath = path.join(tempDir, `output-${Date.now()}.pdf`);
+  const tempDir = os.tmpdir();
+  const inputPath = path.join(tempDir, `input-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.md`);
+  const outputPath = path.join(tempDir, `output-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.pdf`);
+  const cssPath = path.resolve(__dirname, "../styles/pdf-style.css");
 
-  // Write markdown to temp file
-  await fs.writeFile(inputPath, markdownText);
+  try {
+    // Validate input
+    if (!markdownText || typeof markdownText !== 'string' || markdownText.trim().length === 0) {
+      throw new Error("Invalid markdown text provided");
+    }
 
-  return new Promise((resolve, reject) => {
-    markdownpdf({ cssPath })
-      .from(inputPath)
-      .to(outputPath, async function () {
-        try {
-          const buffer = await fs.readFile(outputPath);
-          // Cleanup temp files
-          await fs.unlink(inputPath);
-          await fs.unlink(outputPath);
-          resolve(buffer);
-        } catch (err) {
-          reject(err);
+    // Write markdown to temp file
+    await fs.writeFile(inputPath, markdownText);
+
+    // Configure markdown-pdf options for better PDF generation
+    const options = {
+      cssPath: cssPath,
+      paperFormat: 'A4',
+      paperOrientation: 'portrait',
+      paperBorder: '1in',
+      renderDelay: 1000,
+      css: `
+        @page { margin: 1in; }
+        body { 
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-size: 14px;
+          line-height: 1.7;
+          color: #333;
         }
-      });
-  });
+        h1, h2, h3, h4, h5, h6 { 
+          page-break-after: avoid;
+          color: #2c3e50;
+        }
+        p, li { 
+          orphans: 2; 
+          widows: 2; 
+        }
+        table { 
+          page-break-inside: avoid; 
+        }
+        pre, blockquote { 
+          page-break-inside: avoid; 
+        }
+      `
+    };
+
+    return new Promise((resolve, reject) => {
+      markdownpdf(options)
+        .from(inputPath)
+        .to(outputPath, async function (err) {
+          try {
+            if (err) {
+              console.error("PDF generation error:", err);
+              reject(new Error("Failed to generate PDF"));
+              return;
+            }
+
+            const buffer = await fs.readFile(outputPath);
+            
+            // Cleanup temp files
+            try {
+              await fs.unlink(inputPath);
+              await fs.unlink(outputPath);
+            } catch (cleanupErr) {
+              console.warn("Failed to cleanup temp files:", cleanupErr.message);
+            }
+            
+            resolve(buffer);
+          } catch (err) {
+            console.error("Error processing PDF:", err);
+            reject(err);
+          }
+        });
+    });
+  } catch (error) {
+    console.error("PDF generation error:", error);
+    throw new Error("Failed to generate PDF");
+  }
 };
 
 module.exports = generatePdfBuffer;
-
-
-
-// const html_to_pdf = require('html-pdf-node');
-// const marked = require('marked');
-
-// const generatePdfBuffer = async (markdownText) => {
-//   const htmlContent = marked.parse(markdownText); // Markdown → HTML
-
-//   const finalHtml = `
-//     <html>
-//       <head>
-//         <style>
-//           body { font-family: Arial, sans-serif; padding: 20px; }
-//           h1, h2, h3 { color: #333; }
-//           ul {}
-//           li { margin-bottom: 5px; }
-//           strong { font-weight: bold; }
-//         </style>
-//       </head>
-//       <body>
-//         ${htmlContent}
-//       </body>
-//     </html>
-//   `;
-
-//   const file = { content: finalHtml };
-
-//   // Options (you can tweak this as needed)
-//   const options = { format: 'A4' };
-
-//   const pdfBuffer = await html_to_pdf.generatePdf(file, options);
-//   return pdfBuffer;
-// };
-
-// module.exports = generatePdfBuffer;

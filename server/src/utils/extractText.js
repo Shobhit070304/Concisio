@@ -9,73 +9,129 @@ const pptx2json = new PPTX2Json();
 // Extract text from PDF file
 async function extractTextFromPdf(buffer) {
   try {
+    if (!buffer || buffer.length === 0) {
+      throw new Error("Empty PDF buffer provided");
+    }
+
     const data = await pdfParse(buffer);
-    return data.text; // Extracted text from PDF
-  } catch (err) {
-    console.error(err);
-    throw new Error("Failed to parse PDF");
+    const text = data.text?.trim();
+    
+    if (!text || text.length === 0) {
+      throw new Error("No text content found in PDF");
+    }
+    
+    return text;
+  } catch (error) {
+    console.error("PDF extraction error:", error.message);
+    throw new Error("Failed to extract text from PDF file");
   }
 }
 
 // Extract text from TXT file
 function extractTextFromTxt(buffer) {
   try {
-    return buffer.toString("utf-8");
-  } catch (err) {
-    console.error("Failed to convert buffer to text:", err);
-    return "";
+    if (!buffer || buffer.length === 0) {
+      throw new Error("Empty text buffer provided");
+    }
+
+    const text = buffer.toString("utf-8").trim();
+    
+    if (!text || text.length === 0) {
+      throw new Error("No text content found in file");
+    }
+    
+    return text;
+  } catch (error) {
+    console.error("TXT extraction error:", error.message);
+    throw new Error("Failed to extract text from text file");
   }
 }
 
 // Extract text from PPTX file
 async function extractTextFromPptx(buffer) {
+  let tmpPath = null;
+  
   try {
+    if (!buffer || buffer.length === 0) {
+      throw new Error("Empty PPTX buffer provided");
+    }
+
+    // Create temp directory
     const tmpDir = path.join(__dirname, "../tmp");
     if (!fsSync.existsSync(tmpDir)) {
       fsSync.mkdirSync(tmpDir, { recursive: true });
     }
 
-    const tmpPath = path.join(tmpDir, `upload-${Date.now()}.pptx`);
+    // Create unique temp file
+    tmpPath = path.join(tmpDir, `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.pptx`);
     await fs.writeFile(tmpPath, buffer);
 
-    // Parse the .pptx file using pptx2json
+    // Parse the .pptx file
     const result = await pptx2json.toJson(tmpPath);
 
-    // Delete the temp file after parsing
-    await fs.unlink(tmpPath);
-
-    // Extract text
+    // Extract text from slides
     let lines = [];
     if (result.slides && Array.isArray(result.slides)) {
-      result.slides.forEach((slide) => {
+      result.slides.forEach((slide, index) => {
         if (slide.texts && Array.isArray(slide.texts)) {
           slide.texts.forEach((textItem) => {
             if (textItem.text && typeof textItem.text === "string") {
-              lines.push(textItem.text.trim());
+              const cleanText = textItem.text.trim();
+              if (cleanText.length > 0) {
+                lines.push(cleanText);
+              }
             }
           });
         }
       });
     }
 
-    // Clean up: remove empty lines, trim, and deduplicate
+    // Clean up and deduplicate
     const cleanedLines = Array.from(
-      new Set(
-        lines.map((line) => line.trim()).filter((line) => line.length > 0)
-      )
+      new Set(lines.filter(line => line.length > 0))
     );
 
-    return cleanedLines.join("\n");
-  } catch (err) {
-    console.error("Error extracting PPTX text:", err);
-    throw new Error("Failed to parse PPTX");
+    const extractedText = cleanedLines.join("\n").trim();
+    
+    if (!extractedText || extractedText.length === 0) {
+      throw new Error("No text content found in presentation");
+    }
+    
+    return extractedText;
+  } catch (error) {
+    console.error("PPTX extraction error:", error.message);
+    throw new Error("Failed to extract text from PowerPoint file");
+  } finally {
+    // Cleanup temp file
+    if (tmpPath) {
+      try {
+        await fs.unlink(tmpPath);
+      } catch (cleanupError) {
+        console.warn("Failed to cleanup temp PPTX file:", cleanupError.message);
+      }
+    }
   }
 }
 
 // Extract text from DOCX file
 async function extractTextFromDocx(buffer) {
-  const { value } = await mammoth.extractRawText({ buffer });
-  return value.trim();
+  try {
+    if (!buffer || buffer.length === 0) {
+      throw new Error("Empty DOCX buffer provided");
+    }
+
+    const { value } = await mammoth.extractRawText({ buffer });
+    const text = value?.trim();
+    
+    if (!text || text.length === 0) {
+      throw new Error("No text content found in document");
+    }
+    
+    return text;
+  } catch (error) {
+    console.error("DOCX extraction error:", error.message);
+    throw new Error("Failed to extract text from Word document");
+  }
 }
 
 module.exports = {

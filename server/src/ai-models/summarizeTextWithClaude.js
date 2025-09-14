@@ -1,111 +1,71 @@
 const axios = require("axios");
 
 async function summarizeTextWithClaude(fullText, mode) {
-  let prompt = "";
+  const basePrompt = `You are an expert content summarizer that creates clean, professional Markdown notes. 
 
-  if (mode === "youtube") {
-    prompt = `
-You are a professional knowledge distiller and skilled human-like writer.  
-Your task: Turn the following YouTube transcript into **clear, engaging, and professional Markdown notes**.
+**Style Guidelines:**
+- Clear, concise, and engaging tone
+- Professional yet approachable language
+- Use proper Markdown formatting (#, ##, ###, **bold**, bullet points)
+- Add relevant emojis for visual appeal (✅, 📌, ⚠️, 💡, 🎯)
+- Avoid code blocks, HTML, or excessive formatting
 
-🔹 **Tone & Style**
-- Friendly but professional, like a great educator explaining to a motivated student
-- Natural, human-like flow — avoid robotic or generic AI phrasing
-- Slight storytelling touch to keep the reader hooked
+**Structure:**
+- ## Introduction (brief overview)
+- ## Key Points (main concepts)
+- ## Important Details (specific insights)
+- ## Summary (key takeaways)`;
 
-🔹 **Formatting**
-- Use Markdown headings: #, ##, ###
-- Short, impactful sentences
-- Bullet points for clarity
-- **Bold important terms**
-- Add emojis (✅, 📌, ⚠️, 💡) to improve visual flow
-- Avoid code blocks, raw HTML, or excessive styling
+  let contextPrompt = "";
 
-🔹 **Sections to include**
-1. ## Introduction — 2-3 lines that set the stage
-2. ## Key Concepts / Topics — organized, easy to skim
-3. ## Benefits / Insights — practical takeaways
-4. ## Summary / Closing Thoughts — short and strong
-
-🎯 Output: Only clean Markdown. No explanations about what you’re doing.
-
-Transcript:
-${fullText}
-    `;
-  } else if (mode === "notes") {
-    prompt = `
-You are a concise, human-like summarizer for professional documents.
-
-🔹 **Tone & Style**
-- Professional but warm and approachable
-- Human-like sentence rhythm
-- Avoid mechanical repetition
-
-🔹 **Formatting**
-- Markdown headings (#, ##, ###)
-- Bulleted or numbered lists
-- **Bold important terms**
-- Add emojis where it improves readability
-
-🔹 **Sections**
-- ## Introduction
-- ## Key Concepts / Topics
-- ## Benefits / Use Cases
-- ## Conclusion
-
-Text:
-${fullText}
-    `;
-  } else if (mode === "pdf") {
-    prompt = `
-You are a professional summarizer skilled at transforming long PDF text into engaging, well-structured Markdown notes.
-
-🔹 **Tone**
-- Professional yet conversational
-- Keep the reader engaged, like you're explaining over coffee
-- Avoid generic filler
-
-🔹 **Formatting**
-- Headings: #, ##, ###
-- Bullet points and bolding for key terms
-- Add emojis strategically
-
-🔹 **Structure**
-- ## Introduction
-- ## Main Concepts
-- ## Insights / Applications
-- ## Final Takeaways
-
-Document content:
-${fullText}
-    `;
-  } else {
-    throw new Error("Invalid mode");
+  switch (mode) {
+    case "youtube":
+      contextPrompt = `Transform this YouTube transcript into structured notes:`;
+      break;
+    case "notes":
+      contextPrompt = `Organize these raw notes into professional format:`;
+      break;
+    case "pdf":
+      contextPrompt = `Summarize this document content into clear notes:`;
+      break;
+    case "pptx":
+      contextPrompt = `Convert this presentation content into structured notes:`;
+      break;
+    default:
+      throw new Error("Invalid mode specified");
   }
 
-  const response = await axios.post(
-    "https://openrouter.ai/api/v1/chat/completions",
-    {
-      model: "anthropic/claude-3-haiku", // fixed model
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a highly skilled human-like note taker and summarizer, creating engaging Markdown content.",
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.4,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const prompt = `${basePrompt}\n\n${contextPrompt}\n\n${fullText}`;
 
-  return response.data.choices[0].message.content;
+  try {
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "anthropic/claude-3-haiku",
+        messages: [
+          {
+            role: "system",
+            content: "You are a professional content summarizer creating clean Markdown notes.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 2000,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        timeout: 30000,
+      }
+    );
+
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error("Claude API Error:", error.message);
+    throw new Error("Failed to generate summary with Claude");
+  }
 }
 
 module.exports = summarizeTextWithClaude;
