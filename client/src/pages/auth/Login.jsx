@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { AuthContext } from "../../context/UserContext";
@@ -8,9 +8,14 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (user) {
+      navigate("/home");
+    }
+  })
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -26,7 +31,7 @@ const Login = () => {
         form
       );
       if (res.data.success) {
-        await login(res.data.data);
+        await login(res.data);
         navigate("/home");
       } else {
         setError(res.data.message || "Invalid email or password");

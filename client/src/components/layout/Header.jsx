@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/UserContext";
 import { Menu, X } from "lucide-react";
 
@@ -7,6 +7,7 @@ function Header() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Create a random avatar URL using DiceBear
   let avatar;
@@ -14,6 +15,22 @@ function Header() {
     const randomSeed = user.name + Math.floor(Math.random() * 10000);
     avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${randomSeed}`;
   }
+
+  const pathname = location.pathname;
+
+  // Helper: is user authenticated
+  const isAuth = !!user;
+
+  // Define nav links in a fixed order
+  const navLinksOrdered = [
+    { to: "/", label: "Home", show: () => true },
+    { href: "#about", label: "About", show: () => !isAuth },
+    { href: "#features", label: "Features", show: () => !isAuth },
+    { to: "/dashboard", label: "Dashboard", show: () => isAuth },
+    { href: "#how", label: "How it works", show: () => !isAuth },
+    { href: "#faq", label: "FAQs", show: () => !isAuth },
+    { to: "/profile", label: "Profile", show: () => isAuth },
+  ];
 
   return (
     <header className="border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur z-40">
@@ -24,61 +41,38 @@ function Header() {
             .
           </span>
         </Link>
-        
+
         {/* Mobile menu button */}
-        <button 
+        <button
           className="md:hidden flex items-center text-gray-700"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-700">
-          {user && (
-            <Link
-              to="/"
-              className="hover:text-gray-900 hover:border-b-2 border-amber-400"
-            >
-              Home
-            </Link>
-          )}
-          <a
-            href="#about"
-            className="hover:text-gray-900 hover:border-b-2 border-amber-400"
-          >
-            About
-          </a>
-          <a
-            href="#features"
-            className="hover:text-gray-900 hover:border-b-2 border-amber-400"
-          >
-            Features
-          </a>
-          {user && (
-            <Link
-              to="/dashboard"
-              className="hover:text-gray-900 hover:border-b-2 border-amber-400"
-            >
-              Dashboard
-            </Link>
-          )}
-          {!user && (
-            <>
-              <a
-                href="#how"
-                className="hover:text-gray-900 hover:border-b-2 border-amber-400"
-              >
-                How it works
-              </a>
-              <a
-                href="#faq"
-                className="hover:text-gray-900 hover:border-b-2 border-amber-400"
-              >
-                FAQs
-              </a>
-            </>
-          )}
+          {navLinksOrdered
+            .filter((link) => link.show())
+            .map((link, idx) =>
+              link.to ? (
+                <Link
+                  key={idx}
+                  to={link.to}
+                  className="hover:text-gray-900 hover:border-b-2 border-amber-400"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  key={idx}
+                  href={link.href}
+                  className="hover:text-gray-900 hover:border-b-2 border-amber-400"
+                >
+                  {link.label}
+                </a>
+              )
+            )}
         </nav>
         {/* Desktop Auth Buttons */}
         {!user ? (
@@ -113,64 +107,36 @@ function Header() {
             </Link>
           </div>
         )}
-        
+
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50">
             <div className="px-4 py-3 space-y-3">
               <nav className="flex flex-col space-y-3 text-sm text-gray-700">
-                {user && (
-                  <Link
-                    to="/"
-                    className="hover:text-gray-900 py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Home
-                  </Link>
-                )}
-                <a
-                  href="#about"
-                  className="hover:text-gray-900 py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  About
-                </a>
-                <a
-                  href="#features"
-                  className="hover:text-gray-900 py-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Features
-                </a>
-                {user && (
-                  <Link
-                    to="/dashboard"
-                    className="hover:text-gray-900 py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                )}
-                {!user && (
-                  <>
-                    <a
-                      href="#how"
-                      className="hover:text-gray-900 py-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      How it works
-                    </a>
-                    <a
-                      href="#faq"
-                      className="hover:text-gray-900 py-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      FAQs
-                    </a>
-                  </>
-                )}
+                {navLinksOrdered
+                  .filter((link) => link.show())
+                  .map((link, idx) =>
+                    link.to ? (
+                      <Link
+                        key={idx}
+                        to={link.to}
+                        className="hover:text-gray-900 py-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        key={idx}
+                        href={link.href}
+                        className="hover:text-gray-900 py-2"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {link.label}
+                      </a>
+                    )
+                  )}
               </nav>
-              
               {/* Mobile Auth Buttons */}
               {!user ? (
                 <div className="flex flex-col space-y-2 pt-2 border-t border-gray-100">
@@ -196,8 +162,8 @@ function Header() {
               ) : (
                 <div className="flex flex-col space-y-2 pt-2 border-t border-gray-100">
                   <div className="flex items-center gap-3">
-                    <Link 
-                      to="/profile" 
+                    <Link
+                      to="/profile"
                       className="cursor-pointer"
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -207,7 +173,9 @@ function Header() {
                         className="w-10 h-10 rounded-full border-4 border-blue-500"
                       />
                     </Link>
-                    <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      {user.name}
+                    </span>
                   </div>
                   <button
                     onClick={() => {

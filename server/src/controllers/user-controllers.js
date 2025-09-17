@@ -9,10 +9,10 @@ exports.register = async (req, res) => {
     // Check if user already exists
     const userExist = await User.findOne({ email });
     if (userExist) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: "User already exists with this email",
-        data: null
+        data: null,
       });
     }
 
@@ -30,15 +30,15 @@ exports.register = async (req, res) => {
       message: "User registered successfully",
       data: {
         user: { id: user._id, name: user.name, email: user.email },
-        token
-      }
+        token,
+      },
     });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: "Internal server error during registration",
-      data: null
+      data: null,
     });
   }
 };
@@ -50,20 +50,20 @@ exports.login = async (req, res) => {
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         message: "User not found with this email",
-        data: null
+        data: null,
       });
     }
 
     // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: "Invalid email or password",
-        data: null
+        data: null,
       });
     }
 
@@ -77,15 +77,15 @@ exports.login = async (req, res) => {
       message: "Login successful",
       data: {
         user: { id: user._id, name: user.name, email: user.email },
-        token
-      }
+        token,
+      },
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: "Internal server error during login",
-      data: null
+      data: null,
     });
   }
 };
@@ -97,10 +97,10 @@ exports.update = async (req, res) => {
     // Find user by ID
     const user = await User.findById(req.user);
     if (!user) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         message: "User not found",
-        data: null
+        data: null,
       });
     }
 
@@ -117,15 +117,44 @@ exports.update = async (req, res) => {
       success: true,
       message: "Profile updated successfully",
       data: {
-        user: { id: user._id, name: user.name, email: user.email }
-      }
+        user: { id: user._id, name: user.name, email: user.email },
+      },
     });
   } catch (error) {
     console.error("Profile update error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: "Internal server error during profile update",
-      data: null
+      data: null,
+    });
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    // Find user by ID
+    const user = await User.findById(req.user);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile fetched successfully",
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.error("Profile fetch error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during profile fetch",
+      data: null,
     });
   }
 };

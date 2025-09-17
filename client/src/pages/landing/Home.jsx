@@ -7,13 +7,6 @@ import remarkGfm from "remark-gfm";
 import { AuthContext } from "../../context/UserContext";
 import { toast } from "react-toastify";
 import {
-  ArrowRight,
-  Zap,
-  BookOpen,
-  FileText,
-  Download,
-  Copy,
-  Save,
   Upload,
 } from "lucide-react";
 
@@ -113,7 +106,7 @@ const Home = () => {
         }
       );
       if (res.status === 200) {
-        const output = res.data.summary
+        const output = res.data.data.summary
           .replace("```markdown\n", "")
           .replace("\n```", "");
         setSummary(output);
@@ -214,7 +207,8 @@ const Home = () => {
           },
         }
       );
-      if (res.data.success) {
+      console.log(res.data)
+      if (res.data.data.success) {
         toast.success("Note saved successfully!");
         setTitle("");
       } else {
@@ -383,11 +377,10 @@ const Home = () => {
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-md border transition ${
-                mode === m
-                  ? "bg-amber-600 text-white border-amber-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-              }`}
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-md border transition ${mode === m
+                ? "bg-amber-600 text-white border-amber-600"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
             >
               {m.charAt(0).toUpperCase() + m.slice(1)}
             </button>
@@ -449,7 +442,7 @@ const Home = () => {
             <h2 className="text-sm sm:text-base font-semibold mb-3 text-gray-900">
               Save to Dashboard
             </h2>
-            <form onSubmit={handleSaveToDashboard} className="space-y-4">
+            <form onSubmit={handleSaveNote} className="space-y-4">
               <div>
                 <label
                   htmlFor="title"

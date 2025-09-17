@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="border-t border-gray-200 bg-white">
       <div className="max-w-6xl mx-auto text-center py-2">
         <div className="flex flex-col items-center gap-2">
-          <div className="text-lg font-semibold text-black">Concisio</div>
+          <div className="text-lg font-semibold text-black">Concisio<span className="text-lg text-blue-400">.</span></div>
           <p className="text-sm text-gray-600">
             Turn videos into clean, shareable notes with AI.
           </p>

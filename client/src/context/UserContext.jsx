@@ -12,22 +12,31 @@ const UserContext = ({ children }) => {
   const navigate = useNavigate();
 
   const login = async (userData) => {
-    if (userData.data) {
-      // Handle response with data property (standard API response)
+    // Handle standardized API response format
+    if (userData.success && userData.data) {
       localStorage.setItem("user", JSON.stringify(userData.data.user));
       localStorage.setItem("token", userData.data.token);
       setUser(userData.data);
+    } else if (userData.user && userData.token) {
+      // Fallback for direct user and token values
+      localStorage.setItem("user", JSON.stringify(userData.user));
+      localStorage.setItem("token", userData.token);
+      setUser(userData);
     } else {
-      // Handle direct user and token values
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("token", arguments[1]);
-      setUser({ user: userData, token: arguments[1] });
+      console.error("Invalid user data format received");
     }
   };
 
   const update = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData.user));
-    setUser(userData);
+    if (userData.success && userData.data) {
+      localStorage.setItem("user", JSON.stringify(userData.data.user));
+      setUser(userData.data);
+    } else if (userData.user) {
+      localStorage.setItem("user", JSON.stringify(userData.user));
+      setUser(userData);
+    } else {
+      console.error("Invalid user data format received for update");
+    }
   };
 
   const logout = () => {

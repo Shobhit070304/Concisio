@@ -20,7 +20,7 @@ function Chat() {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/note/${noteId}`,
+          `${import.meta.env.VITE_BASE_URL}/note/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

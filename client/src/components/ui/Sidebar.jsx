@@ -30,7 +30,7 @@ export default function Sidebar() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setNotes(res.data);
+      setNotes(res.data.data.notes);
     } catch (err) {
       toast.error("Failed to fetch notes. Please try again later.");
       // Optionally, you can set an error state here to display an error message

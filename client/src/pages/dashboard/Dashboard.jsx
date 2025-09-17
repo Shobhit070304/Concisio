@@ -21,7 +21,7 @@ export default function Dashboard() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setNotes(res.data);
+      setNotes(res.data.data.notes);
     } catch (err) {
       toast.error("Failed to fetch notes");
     }
@@ -115,11 +115,11 @@ export default function Dashboard() {
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
           </div>
-        ) : notes.length === 0 ? (
+        ) : notes?.length === 0 ? (
           <p className="text-amber-800/70">No saved notes yet.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {notes.map((note) => (
+            {notes?.map((note) => (
               <div
                 key={note._id}
                 className="bg-white/80 backdrop-blur-sm border border-amber-200/50 rounded-xl p-5 shadow-md hover:shadow-lg transition-all hover:-translate-y-1"
