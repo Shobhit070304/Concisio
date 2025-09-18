@@ -207,7 +207,6 @@ const Home = () => {
           },
         }
       );
-      console.log(res.data)
       if (res.data.data.success) {
         toast.success("Note saved successfully!");
         setTitle("");

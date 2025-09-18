@@ -41,7 +41,6 @@ const ProfilePage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Profile data:", res.data.data.user);
       if (res.data.success) {
         setUserData(res.data.data.user);
       }
